@@ -3,6 +3,7 @@ using System.Collections.Generic;
 //using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace cp365
 {
@@ -34,5 +35,16 @@ namespace cp365
                 return defaultDate;
             }
         }
+
+        // удалить все файлы из зданного каталога
+        public static void CleanDirectory(string dir)
+        {
+            string[] files = Directory.GetFiles(dir);
+            foreach(string fileName in files)
+            {
+                File.Delete(fileName);
+            }
+        }
+
     }
 }

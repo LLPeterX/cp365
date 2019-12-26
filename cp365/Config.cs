@@ -329,6 +329,21 @@ namespace cp365
             return true;
         }
         
+        public static bool CheckFiles()
+        {
+            if(!File.Exists("ARJ32.exe"))
+            {
+                MessageBox.Show("Нет файла arj32.exe");
+                return false;
+            }
+            if (!File.Exists("spki1utl.exe"))
+            {
+                MessageBox.Show("Нет файла spki1utl.exe");
+                return false;
+            }
+            return true;
+
+        }
 
     } // config  
 

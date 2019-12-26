@@ -14,6 +14,9 @@ namespace cp365
     {
         public FormMain()
         {
+            if (!Config.CheckFiles())
+                Application.Exit();
+
             InitializeComponent();
             
            
@@ -37,11 +40,11 @@ namespace cp365
             // взять файл из каталога AFN
             // снять с него подпись
             // распаковать в TEMP
-            // расширофровать TEMP\*.vrb
+            // расшифровать TEMP\*.vrb
             // снять подпись с TEMP\*.xml
             // скопировать *.xml в TO_INV, IN\yyyyMMdd
             // на файлы PNO создать WORK\PB2
-
+            DecryptAFN();
 
         }
 
