@@ -19,9 +19,6 @@ namespace cp365
         private const string DEFAULT_DIR = @".\";
         private const string CONFIG_FILENAME = @".\cp365.ini";
         // private members
-//        private static bool usePTK;
-//        private static bool useVirtualFDD;
-//        private static bool useXSD;
 
         public static string TempDir
         {
@@ -221,7 +218,20 @@ namespace cp365
                 SetValue("Other", "Check via XSD", value ? "1" : "0");
             }
         }
-
+        public static bool CreatePB1
+        {
+            get
+            {
+                if (GetValue("Other", "Create PB1", "0") == "1")
+                    return true;
+                return false;
+            }
+            set
+            {
+                SetValue("Other", "Create PB1", value ? "1" : "0");
+            }
+        }
+        // --------------- методы ------------------------------------
         private static string GetValue(string section, string key, string default_value) { 
             if(iniFile == null)
             {

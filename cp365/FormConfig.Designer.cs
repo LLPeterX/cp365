@@ -62,6 +62,7 @@
             this.checkXSD = new System.Windows.Forms.CheckBox();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.makePB1 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -352,12 +353,23 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // makePB1
+            // 
+            this.makePB1.AutoSize = true;
+            this.makePB1.Location = new System.Drawing.Point(612, 126);
+            this.makePB1.Name = "makePB1";
+            this.makePB1.Size = new System.Drawing.Size(103, 17);
+            this.makePB1.TabIndex = 34;
+            this.makePB1.Text = "Создавать PB1";
+            this.makePB1.UseVisualStyleBackColor = true;
+            // 
             // FormConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.makePB1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.checkXSD);
@@ -437,5 +449,6 @@
         private System.Windows.Forms.CheckBox checkXSD;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.CheckBox makePB1;
     }
 }

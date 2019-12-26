@@ -32,7 +32,8 @@ namespace cp365
             this.lastDate.Text = Util.DateToYMD(Config.SerialDate);
             this.virtualFDD.Checked = Config.UseVirtualFDD;
             this.usePTK.Checked = Config.UsePTK;
-            this.checkXSD.Checked = Config.UseXSD; 
+            this.checkXSD.Checked = Config.UseXSD;
+            this.makePB1.Checked = Config.CreatePB1;
 
         }
 
@@ -62,8 +63,11 @@ namespace cp365
             Config.UseVirtualFDD = this.virtualFDD.Checked;
             Config.UsePTK = this.usePTK.Checked && File.Exists(this.ptkini.Text);
             Config.UseXSD = this.checkXSD.Checked && Directory.Exists(this.xsddir.Text);
+            Config.CreatePB1 = this.makePB1.Checked;
 
             Config.CreateDirectories(); // создаем необходимые каталоги
+            if (!Config.Check())
+                return;
 
             this.Close();
         }

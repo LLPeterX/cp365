@@ -30,12 +30,12 @@
         {
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.входящиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuProcessAFN = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuProcessPTK = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuExitIn = new System.Windows.Forms.ToolStripMenuItem();
             this.исходящиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuConfig = new System.Windows.Forms.ToolStripMenuItem();
             this.menuExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.обработкаФайлаAFNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.взятьФайлИзПТКПСДToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuExitIn = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,12 +55,33 @@
             // входящиеToolStripMenuItem
             // 
             this.входящиеToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.обработкаФайлаAFNToolStripMenuItem,
-            this.взятьФайлИзПТКПСДToolStripMenuItem,
+            this.menuProcessAFN,
+            this.menuProcessPTK,
             this.menuExitIn});
             this.входящиеToolStripMenuItem.Name = "входящиеToolStripMenuItem";
             this.входящиеToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
             this.входящиеToolStripMenuItem.Text = "Входящие";
+            // 
+            // menuProcessAFN
+            // 
+            this.menuProcessAFN.Name = "menuProcessAFN";
+            this.menuProcessAFN.Size = new System.Drawing.Size(194, 22);
+            this.menuProcessAFN.Text = "Обработка файла AFN";
+            this.menuProcessAFN.Click += new System.EventHandler(this.processAFN);
+            // 
+            // menuProcessPTK
+            // 
+            this.menuProcessPTK.Name = "menuProcessPTK";
+            this.menuProcessPTK.Size = new System.Drawing.Size(194, 22);
+            this.menuProcessPTK.Text = "Взять файл из ПТК ПСД";
+            this.menuProcessPTK.Click += new System.EventHandler(this.processPTK);
+            // 
+            // menuExitIn
+            // 
+            this.menuExitIn.Name = "menuExitIn";
+            this.menuExitIn.Size = new System.Drawing.Size(194, 22);
+            this.menuExitIn.Text = "Выход";
+            this.menuExitIn.Click += new System.EventHandler(this.menuExit_Click);
             // 
             // исходящиеToolStripMenuItem
             // 
@@ -81,27 +102,6 @@
             this.menuExit.Size = new System.Drawing.Size(52, 20);
             this.menuExit.Text = "Выход";
             this.menuExit.Click += new System.EventHandler(this.menuExit_Click);
-            // 
-            // обработкаФайлаAFNToolStripMenuItem
-            // 
-            this.обработкаФайлаAFNToolStripMenuItem.Name = "обработкаФайлаAFNToolStripMenuItem";
-            this.обработкаФайлаAFNToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.обработкаФайлаAFNToolStripMenuItem.Text = "Обработка файла AFN";
-            this.обработкаФайлаAFNToolStripMenuItem.Click += new System.EventHandler(this.processAFN);
-            // 
-            // взятьФайлИзПТКПСДToolStripMenuItem
-            // 
-            this.взятьФайлИзПТКПСДToolStripMenuItem.Name = "взятьФайлИзПТКПСДToolStripMenuItem";
-            this.взятьФайлИзПТКПСДToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.взятьФайлИзПТКПСДToolStripMenuItem.Text = "Взять файл из ПТК ПСД";
-            this.взятьФайлИзПТКПСДToolStripMenuItem.Click += new System.EventHandler(this.processPTK);
-            // 
-            // menuExitIn
-            // 
-            this.menuExitIn.Name = "menuExitIn";
-            this.menuExitIn.Size = new System.Drawing.Size(194, 22);
-            this.menuExitIn.Text = "Выход";
-            this.menuExitIn.Click += new System.EventHandler(this.menuExit_Click);
             // 
             // FormMain
             // 
@@ -126,8 +126,8 @@
         private System.Windows.Forms.ToolStripMenuItem исходящиеToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuConfig;
         private System.Windows.Forms.ToolStripMenuItem menuExit;
-        private System.Windows.Forms.ToolStripMenuItem обработкаФайлаAFNToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem взятьФайлИзПТКПСДToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuProcessAFN;
+        private System.Windows.Forms.ToolStripMenuItem menuProcessPTK;
         private System.Windows.Forms.ToolStripMenuItem menuExitIn;
     }
 }
