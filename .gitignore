@@ -1,0 +1,14 @@
+/.vs/
+/obj/
+*.img
+*.chm
+*.zip
+*.pfx
+ARJ32,EXE
+*.XML
+*.html
+/bin/Debug/*
+!/bin/Debug/311p.exe
+!/bin/Debug/arj32.exe
+!/bin/Debug/imdisk.exe
+!/bin/Debug/spki1utl.exe

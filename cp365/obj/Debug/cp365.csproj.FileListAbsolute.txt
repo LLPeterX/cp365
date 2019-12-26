@@ -1,0 +1,10 @@
+C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.csprojAssemblyReference.cache
+C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.FormConfig.resources
+C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.FormMain.resources
+C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.Properties.Resources.resources
+C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.csproj.GenerateResource.cache
+C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\cp365.exe.config
+C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\cp365.exe
+C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\cp365.pdb
+C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.exe
+C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.pdb
