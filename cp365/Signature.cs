@@ -31,10 +31,13 @@ namespace cp365
          *    store/
         */
 
-        // Инициализация 
+        // Инициализация СКАД "Сигнатура"
+        // 1) проверяем - есть ли A: ключи на нем
+        //    если нет - монтируем ч/з imdisk образ "profile.IMG" на диск А:
+        // 2) Проверяем наличие A:\vdkeys
         static public int Initialize()
         {
-            if (isInitialized) return 0;
+            if (isInitialized) return 0; // success
 
             SIG_PROFILE = Config.Profile;
             CheckProfile(SIG_PROFILE);
@@ -42,7 +45,7 @@ namespace cp365
             if (!isVdkeysPresent())
             {
                 // поверяем imdisk
-                if (!File.Exists("imdisk.exe"))
+                if (!File.Exists("imdisk.exe") && Config.UseVirtualFDD)
                 {
                     MessageBox.Show("Не найден файл imdisk.exe");
                     return 1;
@@ -71,11 +74,12 @@ namespace cp365
             }
             else
             {
-                MessageBox.Show("Ошибка: на диске A: нет ключей");
+                MessageBox.Show("Ошибка - на диске A: нет ключей");
                 isInitialized = false;
                 use_virtual_fdd = false;
+                return 1;
             }
-            return 1;
+            //return 1;
         }
         static public void Unload()
         {
@@ -117,11 +121,11 @@ namespace cp365
             return 0;
         }
 
-        static public int Encrypt(String file_name, out string result)
+        static public int Encrypt(String file_name, string key, out string result)
         {
             String encryptedName = file_name + ".vrb";
-            String args = "-encrypt -profile " + SIG_PROFILE + " -in " + file_name +
-                " -out " + encryptedName + " -reclist .\\reclist.txt";
+            String args = "-encrypt -profile " + SIG_PROFILE + " -registry -in " + file_name +
+                " -out " + encryptedName + " -reckeyid "+key;
             gzip(file_name);
             ExecuteSpki(args, out result);
             if (!revertFile(file_name, encryptedName))
@@ -139,12 +143,14 @@ namespace cp365
         static public int Decrypt(String file_name)
         {
             string new_name = file_name.ToUpper().Replace(".VRB", ".gz");
-            String args = "-decrypt -profile " + SIG_PROFILE + " -registry -in " + file_name + " -out " + file_name + ".gz";
+            String args = "-decrypt -profile " + SIG_PROFILE + " -registry -in " + file_name + " -out " + new_name;
             string result = null;
             ExecuteSpki(args, out result);
             if (IsSuccess(result))
             {
-                ungzip(file_name + ".gz");
+                ungzip(new_name);
+                File.Delete(file_name);
+
                 return 0;
             }
             else
@@ -152,15 +158,12 @@ namespace cp365
                 MessageBox.Show("Не удалось расшифровать файл\n" + file_name + "\nОшибка:\n" + result);
                 return 1;
             }
-            //return revertFile(file_name, file_name + ".xml") ? 0 : 1;
-
         }
 
         static public int Delsign(String file_name)
         {
             String cleanName = file_name + ".dec";
-            String args = "-verify -delete 1 -profile " + SIG_PROFILE + " -registry -in " + file_name +
-                "-out " + cleanName;
+            String args = "-verify -delete 1 -profile " + SIG_PROFILE + " -registry -in " + file_name + " -out " + cleanName;
 
             string result = null;
             ExecuteSpki(args, out result);
@@ -197,8 +200,7 @@ namespace cp365
                     }
                 }
             }
-            //revertFile(filename, new_name);
-            // да, тут все верно. Если xml создан, то удаляем уже ненужный .gz
+            // Если xml создан, то удаляем уже ненужный .gz
             if(File.Exists(xmlName))
             {
                 File.Delete(zipName);
@@ -232,11 +234,13 @@ namespace cp365
         private static void ExecuteSpki(string arguments, out string result)
         {
             result = null;
+            //Application.UseWaitCursor = true; // один хер не помгает
             Process ps = new Process();
             ps.StartInfo.FileName = SIG_PROGRAM; // spki1utl.exe
             ps.StartInfo.Arguments = arguments;
             ps.StartInfo.UseShellExecute = false;
             ps.StartInfo.RedirectStandardError = true;
+            ps.StartInfo.CreateNoWindow = true;
             ps.StartInfo.StandardErrorEncoding = Encoding.GetEncoding("CP866");
             ps.Start();
             result = ps.StandardError.ReadToEnd();
@@ -262,6 +266,7 @@ namespace cp365
             // читаем профили
             for(int profileNum=0; profileNum<profilesCount; profileNum++)
             {
+                // читаем разделы реестра "HKEY_CURRENT_USER\Software\MDPREI\spki\Profiles\0" и т.д.
                 string profileName = (String)Registry.GetValue(HKCU_PROFILE + "\\" + profileNum.ToString(), "ProfileName", "");
                 if(!String.IsNullOrEmpty(profileName) && profileName==profile)
                 {
@@ -273,15 +278,14 @@ namespace cp365
 
         // Проверить наличие ключа в профиле
         // 1. открываем base_dir\profile\Local.gdbm
-        // 2. Ищем ключ
+        // 2. Ищем ключ в содержимом файла тупо по сопадению подстрок
         public static bool CheckKey(string profile, string key)
         {
             if (key.Length != 12) return false;
             string pathGDBM = profilesBaseDirectory + "\\" + profile + "\\Local.gdbm";
             try
             {
-                string gdbmContent = File.ReadAllText(pathGDBM);
-                return gdbmContent.Contains(key);
+                return File.ReadAllText(pathGDBM).Contains(key);
             } catch // файла нет или ошибка
             {
                 return false;

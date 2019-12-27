@@ -45,6 +45,8 @@ namespace cp365
             // скопировать *.xml в TO_INV, IN\yyyyMMdd
             // на файлы PNO создать WORK\PB2
             DecryptAFN();
+            //this.lbInfo.Visible = false;
+            ShowProcess(false);
 
         }
 

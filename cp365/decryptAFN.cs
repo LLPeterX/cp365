@@ -28,46 +28,93 @@ namespace cp365
             openAFN.RestoreDirectory = true;
             if (openAFN.ShowDialog() != DialogResult.OK)
                 return false;
-            string AFNname = Path.GetFullPath(openAFN.FileName);
-            // надо ли снимать ЭЦП, если и так все прекрасно разархивируется?
-            // разархивируем AFN
-            Util.CleanDirectory(Config.TempDir);
-            Process ps = new Process();
-            ps.StartInfo.FileName = "arj32.exe";
-            ps.StartInfo.Arguments = "x -y " + AFNname + " " + tempDir;
-            ps.StartInfo.UseShellExecute = false;
-            ps.Start();
-            ps.WaitForExit();
-            // теперь в TEMP разархивированные файлы - *.vrb и *.xml
-            // расшифровать *.vrb в .xml
-            string[] vrbFiles = Directory.GetFiles(tempDir, "*.vrb");
-            foreach (string fname in vrbFiles)
-            {
-                if (Signature.Decrypt(tempDir+"\\"+fname) != 0)
+            //            this.lbInfo.Text = "Обработка...";
+            //            this.lbInfo.Visible = true;
+            ShowProcess(true);
+            
+                string AFNname = Path.GetFullPath(openAFN.FileName);
+                // надо ли снимать ЭЦП, если и так все прекрасно разархивируется?
+                // разархивируем AFN
+                Util.CleanDirectory(Config.TempDir);
+                Process ps = new Process();
+                ps.StartInfo.FileName = "arj32.exe";
+                ps.StartInfo.Arguments = "x -y " + AFNname + " " + tempDir;
+                ps.StartInfo.UseShellExecute = false;
+                ps.Start();
+                ps.WaitForExit();
+                // теперь в TEMP разархивированные файлы - *.vrb и *.xml
+                // расшифровать *.vrb в .xml
+                Signature.Initialize();
+                string[] vrbFiles = Directory.GetFiles(tempDir, "*.vrb"); // в массиве полные имена
+                foreach (string fname in vrbFiles)
                 {
-                    // Ошибка - чистим TEMP
-                    Util.CleanDirectory(tempDir);
-                    return false;
+                    if (Signature.Decrypt(fname) != 0)
+                    {
+                        // Если ошибка - чистим TEMP и выходим
+                        Util.CleanDirectory(tempDir);
+                        return false;
+                    }
                 }
-            }
-            // снятие ЭЦП с файлов *.xml
-            string[] xmlFiles = Directory.GetFiles(tempDir, "*.xml");
-            foreach(string fname in xmlFiles)
+                // снятие ЭЦП с файлов *.xml
+                string[] xmlFiles = Directory.GetFiles(tempDir, "*.xml");
+                foreach (string fname in xmlFiles)
+                {
+                    Signature.Delsign(fname);
+                }
+                // копирование в каталог IN\YYYYMMDD
+                string subdir = Config.InDir + "\\" + Util.DateToYMD(DateTime.Now);
+                if (!Directory.Exists(subdir))
+                    Directory.CreateDirectory(subdir);
+                string invDir = Config.INVDir;
+                string strStat = GetStatistic(xmlFiles);
+                foreach (string fname in xmlFiles) //fname = fullpath файла из каталога TEMP
+                {
+                    string outName = subdir + "\\" + Path.GetFileName(fname);
+                    File.Copy(fname, outName, true);
+                    outName = invDir + "\\" + Path.GetFileName(fname);
+                    if (Directory.Exists(invDir))
+                        File.Copy(fname, outName, true);
+                }
+                MessageBox.Show(strStat, "Статистика", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return true;
+        }
+
+        private string  GetStatistic(string[] fileNames)
+        {
+            Dictionary<String,Int32> stat = new Dictionary<String, Int32>();
+            foreach(string fname in fileNames)
             {
-                Signature.Delsign(tempDir+"\\"+fname);
+                string fileName = Path.GetFileName(fname).ToUpper();
+                string id = fileName.Substring(0, 3);
+                if (stat.ContainsKey(id))
+                    stat[id]++;
+                else
+                    stat[id] = 1;
+                
             }
-            // копирование в каталог IN\YYYYMMDD
-            string subdir = Config.InDir+"\\"+Util.DateToYMD(DateTime.Now);
-            if (Directory.Exists(subdir))
-                Directory.CreateDirectory(subdir);
-            string invDir = Config.InDir;
-            foreach(string fname in xmlFiles)
+            StringBuilder sb = new StringBuilder();
+            foreach(string key in stat.Keys)
             {
-                File.Copy(tempDir + "\\" + fname, subdir + "\\" + fname);
-                if(Directory.Exists(invDir))
-                    File.Copy(tempDir + "\\" + fname, invDir + "\\" + fname);
+                sb.Append(key);
+                sb.Append(": ");
+                sb.Append(stat[key].ToString());
+                sb.Append("\n");
             }
-            return true;
+            return sb.ToString();
+        }
+
+        private void ShowProcess(bool active)
+        {
+            if(active)
+            {
+                this.lbInfo.Visible = true;
+                this.lbInfo.Text = "Обработка...";
+                this.lbInfo.Left = (this.Width - lbInfo.Width) / 2;
+            } else
+            {
+                this.lbInfo.Visible = false;
+            }
+            this.Refresh();
         }
 
     }
