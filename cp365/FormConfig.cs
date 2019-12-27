@@ -35,6 +35,9 @@ namespace cp365
             this.checkXSD.Checked = Config.UseXSD;
             this.makePB1.Checked = Config.CreatePB1;
             this.noLicense.Checked = Config.NoLicense;
+            this.dolgn.Text = Config.DolOtpr;
+            this.family.Text = Config.FamOtpr;
+            this.tel.Text = Config.TelOtpr;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
@@ -126,6 +129,9 @@ namespace cp365
             Config.UseXSD = this.checkXSD.Checked && Directory.Exists(this.xsddir.Text);
             Config.CreatePB1 = this.makePB1.Checked;
             Config.NoLicense = this.noLicense.Checked;
+            Config.TelOtpr = this.tel.Text;
+            Config.DolOtpr = this.dolgn.Text;
+            Config.FamOtpr = this.family.Text;
 
             this.Close();
         }

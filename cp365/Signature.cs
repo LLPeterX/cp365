@@ -285,7 +285,10 @@ namespace cp365
             string pathGDBM = profilesBaseDirectory + "\\" + profile + "\\Local.gdbm";
             try
             {
-                return File.ReadAllText(pathGDBM).Contains(key);
+                string gdbm = File.ReadAllText(pathGDBM);
+                bool result = gdbm.Contains(key);
+                return result;
+                //return File.ReadAllText(pathGDBM).Contains(key);
             } catch // файла нет или ошибка
             {
                 return false;

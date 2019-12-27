@@ -48,5 +48,14 @@ namespace cp365
             }
         }
 
+        public static string GUID()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
+        public static string XMLDate(DateTime d)
+        {
+            return d.ToString("yyyy-MM-dd");
+        }
     }
 }

@@ -64,6 +64,12 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.makePB1 = new System.Windows.Forms.CheckBox();
             this.noLicense = new System.Windows.Forms.CheckBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.dolgn = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.family = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.tel = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -208,7 +214,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(20, 302);
+            this.label10.Location = new System.Drawing.Point(611, 219);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(63, 13);
             this.label10.TabIndex = 17;
@@ -216,7 +222,7 @@
             // 
             // bik
             // 
-            this.bik.Location = new System.Drawing.Point(88, 298);
+            this.bik.Location = new System.Drawing.Point(679, 215);
             this.bik.MaxLength = 9;
             this.bik.Name = "bik";
             this.bik.Size = new System.Drawing.Size(100, 20);
@@ -225,7 +231,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(220, 302);
+            this.label11.Location = new System.Drawing.Point(610, 245);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(62, 13);
             this.label11.TabIndex = 19;
@@ -233,7 +239,7 @@
             // 
             // fil
             // 
-            this.fil.Location = new System.Drawing.Point(289, 298);
+            this.fil.Location = new System.Drawing.Point(679, 241);
             this.fil.Name = "fil";
             this.fil.Size = new System.Drawing.Size(44, 20);
             this.fil.TabIndex = 20;
@@ -266,7 +272,7 @@
             // 
             // fnskey
             // 
-            this.fnskey.Location = new System.Drawing.Point(481, 333);
+            this.fnskey.Location = new System.Drawing.Point(462, 333);
             this.fnskey.MaxLength = 12;
             this.fnskey.Name = "fnskey";
             this.fnskey.Size = new System.Drawing.Size(100, 20);
@@ -377,12 +383,68 @@
             this.noLicense.Text = "Отозвана лицензия";
             this.noLicense.UseVisualStyleBackColor = true;
             // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(23, 296);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(132, 13);
+            this.label16.TabIndex = 36;
+            this.label16.Text = "Должность отправителя";
+            // 
+            // dolgn
+            // 
+            this.dolgn.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.dolgn.Location = new System.Drawing.Point(162, 292);
+            this.dolgn.Name = "dolgn";
+            this.dolgn.Size = new System.Drawing.Size(145, 20);
+            this.dolgn.TabIndex = 37;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(333, 296);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(56, 13);
+            this.label17.TabIndex = 38;
+            this.label17.Text = "Фамилия";
+            // 
+            // family
+            // 
+            this.family.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.family.Location = new System.Drawing.Point(407, 292);
+            this.family.Name = "family";
+            this.family.Size = new System.Drawing.Size(149, 20);
+            this.family.TabIndex = 39;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(574, 296);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(52, 13);
+            this.label18.TabIndex = 40;
+            this.label18.Text = "Телефон";
+            // 
+            // tel
+            // 
+            this.tel.Location = new System.Drawing.Point(632, 292);
+            this.tel.Name = "tel";
+            this.tel.Size = new System.Drawing.Size(123, 20);
+            this.tel.TabIndex = 41;
+            // 
             // FormConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.tel);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.family);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.dolgn);
+            this.Controls.Add(this.label16);
             this.Controls.Add(this.noLicense);
             this.Controls.Add(this.makePB1);
             this.Controls.Add(this.btnCancel);
@@ -466,5 +528,11 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.CheckBox makePB1;
         private System.Windows.Forms.CheckBox noLicense;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox dolgn;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox family;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox tel;
     }
 }

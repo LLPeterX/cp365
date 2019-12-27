@@ -67,16 +67,25 @@ namespace cp365
                     Directory.CreateDirectory(subdir);
                 string invDir = Config.INVDir;
                 string strStat = GetStatistic(xmlFiles);
-                foreach (string fname in xmlFiles) //fname = fullpath файла из каталога TEMP
-                {
-                    string outName = subdir + "\\" + Path.GetFileName(fname);
+            bool makePB1 = Config.CreatePB1;
+            string workDir = Config.WorkDir;
+            foreach (string fname in xmlFiles) //fname = fullpath файла из каталога TEMP
+            {
+                string justName = Path.GetFileName(fname).ToUpper();
+                string outName = subdir + "\\" + justName;
+                File.Copy(fname, outName, true);
+                outName = invDir + "\\" + justName;
+                if (Directory.Exists(invDir))
                     File.Copy(fname, outName, true);
-                    outName = invDir + "\\" + Path.GetFileName(fname);
-                    if (Directory.Exists(invDir))
-                        File.Copy(fname, outName, true);
+                // создать файлы полтверждения PB1
+                if (makePB1 && justName.Substring(0, 3) != "KWT")
+                {
+                    PB pb1 = new PB(fname, PBTYPE.GOOD);
+                    pb1.Save(workDir);
                 }
-                MessageBox.Show(strStat, "Статистика", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return true;
+             }
+             MessageBox.Show(strStat, "Статистика", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return true;
         }
 
         private string  GetStatistic(string[] fileNames)

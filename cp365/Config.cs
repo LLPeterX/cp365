@@ -17,6 +17,8 @@ namespace cp365
         private static IniFile iniFile = null;
         private const string DEFAULT_DIR = @".\";
         private const string CONFIG_FILENAME = @".\cp365.ini";
+
+        public static string VersForm = "3.00";
         // private members
 
         public static string TempDir
@@ -127,6 +129,39 @@ namespace cp365
             set
             {
                 SetValue("Bank", "FilialNumber", value);
+            }
+        }
+        public static string TelOtpr
+        {
+            get
+            {
+                return GetValue("Bank", "Phone", "");
+            }
+            set
+            {
+                SetValue("Bank", "Phone", value);
+            }
+        }
+        public static string DolOtpr
+        {
+            get
+            {
+                return GetValue("Bank", "Sender State", "");
+            }
+            set
+            {
+                SetValue("Bank", "Sender State", value);
+            }
+        }
+        public static string FamOtpr
+        {
+            get
+            {
+                return GetValue("Bank", "Sender Family", "");
+            }
+            set
+            {
+                SetValue("Bank", "Sender Family", value);
             }
         }
         public static bool UsePTK
