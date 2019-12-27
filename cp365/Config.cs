@@ -244,6 +244,7 @@ namespace cp365
             }
         }
         // --------------- методы ------------------------------------
+        // Получить значение (строковое) из ini-файла
         private static string GetValue(string section, string key, string default_value) { 
             if(iniFile == null)
             {
@@ -253,6 +254,7 @@ namespace cp365
                 return iniFile.Read(key, section).Trim();
             else return default_value;
         }
+        // Получить значение (целое) из ini-файла
         private static int GetValue(string section, string key, int  default_value)
         {
             int retValue = 0;
@@ -271,6 +273,7 @@ namespace cp365
             return retValue;
         }
 
+        // Запомнить указанное значение в ini-файле
         private static void SetValue(string section, string key, string value)
         {
             if (iniFile == null)
@@ -289,6 +292,7 @@ namespace cp365
             iniFile.Write(key, value.ToString(), section);
         }
 
+        // Проверить наличие нужных внешних EXE-файлов (arj, сигнатура, imdisk)
           public static bool CheckFiles()
         {
             if(!File.Exists("ARJ32.exe"))
@@ -296,12 +300,18 @@ namespace cp365
                 MessageBox.Show("Нет файла arj32.exe");
                 return false;
             }
-            // ниже спорно. Можно бы взять из Signature, но т.к. м.б. x32 и x64 гемор определять где находится файл
+            // ниже спорно. Можно бы взять из Signature, но т.к. м.б. x32 и x64 гемор определять где находится spki1utl.exe
             // так что лучше скопировать spki1utl.exe в рабочий каталог.
             // В будущем переделаю
             if (!File.Exists("spki1utl.exe"))
             {
                 MessageBox.Show("Нет файла spki1utl.exe");
+                return false;
+            }
+            // не очень. В конфиге исп-е imdisk м.б. указано позже
+            if(Config.UseVirtualFDD && !File.Exists("imdisk.exe"))
+            {
+                MessageBox.Show("Указано использование виртуального FDD\nНо нет файла IMDISK.EXE");
                 return false;
             }
             

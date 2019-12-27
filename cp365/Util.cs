@@ -9,6 +9,7 @@ namespace cp365
 {
     public static class Util
     {
+        // Преобразорвание DateTime в строку YYYYMMDD
         public static string DateToYMD(DateTime d)
         {
             if (d == null)
@@ -17,6 +18,7 @@ namespace cp365
             
         }
 
+        // Преобразование даты в виде YYYYMMDD в DateTime
         public static DateTime DateFromYMD(string str)
         {
             DateTime defaultDate = DateTime.Today;
@@ -36,7 +38,7 @@ namespace cp365
             }
         }
 
-        // удалить все файлы из зданного каталога
+        // удалить все файлы из заданного каталога
         public static void CleanDirectory(string dir)
         {
             string[] files = Directory.GetFiles(dir);
