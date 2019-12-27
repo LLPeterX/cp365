@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+//using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
@@ -15,20 +15,21 @@ namespace cp365
         private static bool isInitialized = false;
         private const string SIG_PROGRAM = "spki1utl.exe";
         private static string SIG_PROFILE;
-        private const string SIG_INSALL_PATH = "HKEY_LOCAL_MACHINE\\SOFTWARE\\MDPREI\\scsref\\CurrentVersion";
-        /*
-         * scs/InstallPath - это будет путь к spki1utl.exe
-         */
-        private const string SIG_PROF_SECTION = "HKEY_CURRENT_USER\\Software\\MDPREI\\spki";
+        private static string profilesBaseDirectory = null;
+        private const string HKLM_SIGNATURE64 = @"HKEY_LOCAL_MACHINE\\SOFTWARE\\MDPREI\\scsref\\CurrentVersion";
+        private const string HKLM_SIGNATURE32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\MDPREI\scs\CurrentVersion";
+        // в реестре значение InstallPath
+
+        private const string HKCU_PROFILE = @"HKEY_CURRENT_USER\Software\MDPREI\spki\Profiles";
         /* внутри значения:
-         *  Profiles/count - число профилей
-         *  Profiles/CurSel - N профиля по умолчанию (1)
+         *  count - число профилей
+         *  CurSel - N профиля по умолчанию (1)
          *  Profile/0 - пао умолчанию (не юзать)
          *  Profiles/1/BasePath - путь к профилям
          *  Profiles/1/ProfileName - имя профиля
          *  store/0 (1  т.п.)Ж
          *    store/
-        */  
+        */
 
         // Инициализация 
         static public int Initialize()
@@ -36,6 +37,7 @@ namespace cp365
             if (isInitialized) return 0;
 
             SIG_PROFILE = Config.Profile;
+            CheckProfile(SIG_PROFILE);
             // Проверяем, что вставлен/смонтирован правильный носитель
             if (!isVdkeysPresent())
             {
@@ -106,15 +108,6 @@ namespace cp365
             String signedName = file_name + ".sig";
             String args = "-sign -profile " + SIG_PROFILE + " -registry -data " + file_name + " -out " + signedName;
             ExecuteSpki(args, out result);
-            /*
-            if(IsSuccess(result))
-            {
-                MessageBox.Show("Успешно");
-            } else
-            {
-                MessageBox.Show("Ошибка");
-            }
-            */
             // удаляем оригинальный файл и переименовываем signedName в file_name
             if (!revertFile(file_name, signedName))
             {
@@ -141,12 +134,25 @@ namespace cp365
         }
 
         // расшифровка файла .vrb в .xml (дальнейшее преобразование будет далее)
+        // 1) расшифроываем в .gz
+        // 2) распаковываем .gz в .xml
         static public int Decrypt(String file_name)
         {
+            string new_name = file_name.ToUpper().Replace(".VRB", ".gz");
             String args = "-decrypt -profile " + SIG_PROFILE + " -registry -in " + file_name + " -out " + file_name + ".gz";
             string result = null;
             ExecuteSpki(args, out result);
-            return revertFile(file_name, file_name + ".xml") ? 0 : 1;
+            if (IsSuccess(result))
+            {
+                ungzip(file_name + ".gz");
+                return 0;
+            }
+            else
+            {
+                MessageBox.Show("Не удалось расшифровать файл\n" + file_name + "\nОшибка:\n" + result);
+                return 1;
+            }
+            //return revertFile(file_name, file_name + ".xml") ? 0 : 1;
 
         }
 
@@ -156,12 +162,8 @@ namespace cp365
             String args = "-verify -delete 1 -profile " + SIG_PROFILE + " -registry -in " + file_name +
                 "-out " + cleanName;
 
-            Process ps = new Process();
-            ps.StartInfo.FileName = SIG_PROGRAM;
-            ps.StartInfo.Arguments = args;
-            ps.StartInfo.UseShellExecute = false;
-            ps.Start();
-            ps.WaitForExit();
+            string result = null;
+            ExecuteSpki(args, out result);
             return revertFile(file_name, cleanName) ? 0 : 1;
 
         }
@@ -181,14 +183,13 @@ namespace cp365
         }
 
         // нииже хуйня. код лучше: https://docs.microsoft.com/ru-ru/dotnet/api/system.io.compression.gzipstream?view=netframework-4.8
-        static public void ungzip(String filename)
+        // Распаковать файл VRB в XML (.gz получен после decrypt vrb)
+        static public void ungzip(String zipName)
         {
-            String new_name = filename.Replace(".gz", ".xml");
-            //FileStream gzStream = File.OpenRead(filename); // gzip file
-            //FileStream outStream = File.OpenWrite(new_name); // result
-            using (FileStream gzipFileStream = new FileStream(filename,FileMode.Open))
+            String xmlName = zipName.Replace(".gz", ".xml");
+            using (FileStream gzipFileStream = new FileStream(zipName,FileMode.Open))
             {
-                using (FileStream decompressedFileStream = File.Create(new_name))
+                using (FileStream decompressedFileStream = File.Create(xmlName))
                 {
                     using (GZipStream decompressionStream = new GZipStream(gzipFileStream, CompressionMode.Decompress))
                     {
@@ -196,7 +197,12 @@ namespace cp365
                     }
                 }
             }
-            //File.Delete(filename);
+            //revertFile(filename, new_name);
+            // да, тут все верно. Если xml создан, то удаляем уже ненужный .gz
+            if(File.Exists(xmlName))
+            {
+                File.Delete(zipName);
+            }
         }
 
         // переместить файл newFile в oldFile
@@ -244,14 +250,44 @@ namespace cp365
             return false;
         }
 
-        public bool CheckProfileAndKey(string profile, string key)
+        // Проверить наличие профиля. Для этого смотрим в реестре
+        public static bool CheckProfile(string profile)
         {
-            Registry.GetValue
-          
+            profile = profile.Trim();
+            if (String.IsNullOrEmpty(profile) || profile.Length < 3) return false;
+            Int32 profilesCount = (Int32)Registry.GetValue(HKCU_PROFILE, "count", 0);
+            profilesBaseDirectory = (String)Registry.GetValue(HKCU_PROFILE, "BasePath",null);
+            if (profilesCount == 0)
+                return false;
+            // читаем профили
+            for(int profileNum=0; profileNum<profilesCount; profileNum++)
+            {
+                string profileName = (String)Registry.GetValue(HKCU_PROFILE + "\\" + profileNum.ToString(), "ProfileName", "");
+                if(!String.IsNullOrEmpty(profileName) && profileName==profile)
+                {
+                    return true;
+                }
+            }
             return false;
-
         }
-        
+
+        // Проверить наличие ключа в профиле
+        // 1. открываем base_dir\profile\Local.gdbm
+        // 2. Ищем ключ
+        public static bool CheckKey(string profile, string key)
+        {
+            if (key.Length != 12) return false;
+            string pathGDBM = profilesBaseDirectory + "\\" + profile + "\\Local.gdbm";
+            try
+            {
+                string gdbmContent = File.ReadAllText(pathGDBM);
+                return gdbmContent.Contains(key);
+            } catch // файла нет или ошибка
+            {
+                return false;
+            }
+        }
+       
 
     }
 

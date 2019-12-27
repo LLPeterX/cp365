@@ -44,7 +44,7 @@
             this.outdir = new System.Windows.Forms.TextBox();
             this.invdir = new System.Windows.Forms.TextBox();
             this.xsddir = new System.Windows.Forms.TextBox();
-            this.ptkini = new System.Windows.Forms.TextBox();
+            this.ptkdb = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.bik = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -63,6 +63,7 @@
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.makePB1 = new System.Windows.Forms.CheckBox();
+            this.noLicense = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -98,54 +99,54 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(30, 94);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(95, 13);
+            this.label4.Size = new System.Drawing.Size(118, 13);
             this.label4.TabIndex = 3;
-            this.label4.Text = "Входящие файлы";
+            this.label4.Text = "Входящие сообщения";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(30, 126);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(98, 13);
+            this.label5.Size = new System.Drawing.Size(112, 13);
             this.label5.TabIndex = 4;
-            this.label5.Text = "Входящие архивы";
+            this.label5.Text = "Файлы AFN из ФНС";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(30, 158);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(105, 13);
+            this.label6.Size = new System.Drawing.Size(127, 13);
             this.label6.TabIndex = 5;
-            this.label6.Text = "Исходящие архивы";
+            this.label6.Text = "Исходящие AFN в ФНС";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(30, 190);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(101, 13);
+            this.label7.Size = new System.Drawing.Size(72, 13);
             this.label7.TabIndex = 6;
-            this.label7.Text = "Каталог Инверсии";
+            this.label7.Text = "Каталог АБС";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(30, 222);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(69, 13);
+            this.label8.Size = new System.Drawing.Size(114, 13);
             this.label8.TabIndex = 7;
-            this.label8.Text = "Файлы XSD";
+            this.label8.Text = "Каталог файлов XSD";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(30, 254);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(71, 13);
+            this.label9.Size = new System.Drawing.Size(118, 13);
             this.label9.TabIndex = 8;
-            this.label9.Text = "Путь к ptk.ini";
+            this.label9.Text = "Файл elo.ini ПТК ПСД";
             // 
             // workdir
             // 
@@ -193,15 +194,16 @@
             // 
             this.xsddir.Location = new System.Drawing.Point(156, 216);
             this.xsddir.Name = "xsddir";
+            this.xsddir.ReadOnly = true;
             this.xsddir.Size = new System.Drawing.Size(424, 20);
             this.xsddir.TabIndex = 15;
             // 
-            // ptkini
+            // ptkdb
             // 
-            this.ptkini.Location = new System.Drawing.Point(156, 247);
-            this.ptkini.Name = "ptkini";
-            this.ptkini.Size = new System.Drawing.Size(424, 20);
-            this.ptkini.TabIndex = 16;
+            this.ptkdb.Location = new System.Drawing.Point(156, 247);
+            this.ptkdb.Name = "ptkdb";
+            this.ptkdb.Size = new System.Drawing.Size(424, 20);
+            this.ptkdb.TabIndex = 16;
             // 
             // label10
             // 
@@ -215,6 +217,7 @@
             // bik
             // 
             this.bik.Location = new System.Drawing.Point(88, 298);
+            this.bik.MaxLength = 9;
             this.bik.Name = "bik";
             this.bik.Size = new System.Drawing.Size(100, 20);
             this.bik.TabIndex = 18;
@@ -254,16 +257,17 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label13.Location = new System.Drawing.Point(309, 337);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(167, 13);
+            this.label13.Size = new System.Drawing.Size(145, 13);
             this.label13.TabIndex = 23;
             this.label13.Text = "N ключа шифрования ФНС";
             // 
             // fnskey
             // 
-            this.fnskey.Location = new System.Drawing.Point(473, 333);
+            this.fnskey.Location = new System.Drawing.Point(481, 333);
+            this.fnskey.MaxLength = 12;
             this.fnskey.Name = "fnskey";
             this.fnskey.Size = new System.Drawing.Size(100, 20);
             this.fnskey.TabIndex = 24;
@@ -363,12 +367,23 @@
             this.makePB1.Text = "Создавать PB1";
             this.makePB1.UseVisualStyleBackColor = true;
             // 
+            // noLicense
+            // 
+            this.noLicense.AutoSize = true;
+            this.noLicense.Location = new System.Drawing.Point(612, 158);
+            this.noLicense.Name = "noLicense";
+            this.noLicense.Size = new System.Drawing.Size(126, 17);
+            this.noLicense.TabIndex = 35;
+            this.noLicense.Text = "Отозвана лицензия";
+            this.noLicense.UseVisualStyleBackColor = true;
+            // 
             // FormConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.noLicense);
             this.Controls.Add(this.makePB1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -387,7 +402,7 @@
             this.Controls.Add(this.label11);
             this.Controls.Add(this.bik);
             this.Controls.Add(this.label10);
-            this.Controls.Add(this.ptkini);
+            this.Controls.Add(this.ptkdb);
             this.Controls.Add(this.xsddir);
             this.Controls.Add(this.invdir);
             this.Controls.Add(this.outdir);
@@ -431,7 +446,7 @@
         private System.Windows.Forms.TextBox outdir;
         private System.Windows.Forms.TextBox invdir;
         private System.Windows.Forms.TextBox xsddir;
-        private System.Windows.Forms.TextBox ptkini;
+        private System.Windows.Forms.TextBox ptkdb;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox bik;
         private System.Windows.Forms.Label label11;
@@ -450,5 +465,6 @@
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.CheckBox makePB1;
+        private System.Windows.Forms.CheckBox noLicense;
     }
 }

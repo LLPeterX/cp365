@@ -8,7 +8,6 @@ using System.Windows.Forms;
 
 namespace cp365
 {
-    // Это все херня.
     // выбрать одно из:
     // - IniFile https://stackoverflow.com/questions/217902/reading-writing-an-ini-file
     // - IniManager http://plssite.ru/csharp/csharp_ini_files_article.html
@@ -97,15 +96,15 @@ namespace cp365
                 SetValue("Paths", "XSD", value);
             }
         }
-        public static string PTKPath
+        public static string PTKDatabase
         {
             get
             {
-                return GetValue("PTK", "PTK INI file", "");
+                return GetValue("PTK", "Database", "");
             }
             set
             {
-                SetValue("PTK", "PTK INI file", value);
+                SetValue("PTK", "Database", value);
             }
         }
         public static string BIK
@@ -134,7 +133,7 @@ namespace cp365
         {
             get
             {
-                if (String.IsNullOrEmpty(PTKPath))
+                if (!File.Exists(PTKDatabase))
                     return false;
                 if (GetValue("PTK", "UsePTK", "0") == "0")
                     return false;
@@ -142,7 +141,7 @@ namespace cp365
             }
             set
             {
-                SetValue("PTK", "UsePTK", value ? "1" : "0");
+                SetValue("PTK", "UsePTK", value && File.Exists(PTKDatabase) ? "1" : "0");
             }
         }
         public static bool UseVirtualFDD
@@ -231,6 +230,19 @@ namespace cp365
                 SetValue("Other", "Create PB1", value ? "1" : "0");
             }
         }
+        public static bool NoLicense
+        {
+            get
+            {
+                if (GetValue("Other", "No License", "0") == "1")
+                    return true;
+                return false;
+            }
+            set
+            {
+                SetValue("Other", "No License", value ? "1" : "0");
+            }
+        }
         // --------------- методы ------------------------------------
         private static string GetValue(string section, string key, string default_value) { 
             if(iniFile == null)
@@ -277,70 +289,22 @@ namespace cp365
             iniFile.Write(key, value.ToString(), section);
         }
 
-        public static void CreateDirectories()
-        {
-            // создание начальных каталогов, установленных переменными
-            string[] directories = { TempDir, WorkDir, OutDir, AFNDir, INVDir, XSDDir };
-            foreach(string dir in directories)
-            {
-                if (String.IsNullOrEmpty(dir) && dir.Length > 2)
-                {
-                    if (!Directory.Exists(dir))
-                    {
-                        Directory.CreateDirectory(dir);
-                    }
-                }
-            }
-        }
-
-        public static bool Check()
-        {
-            // проверка конфигурации
-            // каталоги
-            string[] directories = { TempDir, WorkDir, OutDir, AFNDir, INVDir, XSDDir };
-            foreach (string dir in directories)
-            {
-                if (!String.IsNullOrEmpty(dir))
-                {
-                    if (!Directory.Exists(dir))
-                    {
-                        MessageBox.Show($"Каталог {dir} не существует", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return false;
-                    }
-                }
-            }
-            // остальные проверки
-            string bik = BIK;
-            if(bik.Length!=9 || bik.Substring(0,2)!="04")
-            {
-                MessageBox.Show("Неверный БИК", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-            if(String.IsNullOrEmpty(Profile))
-            {
-                MessageBox.Show("Не задан профиль", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-            if(String.IsNullOrEmpty(FNSKey) || FNSKey.Length!=12) {
-                MessageBox.Show("Неверный ключ шифрования ФНС", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-
-            return true;
-        }
-        
-        public static bool CheckFiles()
+          public static bool CheckFiles()
         {
             if(!File.Exists("ARJ32.exe"))
             {
                 MessageBox.Show("Нет файла arj32.exe");
                 return false;
             }
+            // ниже спорно. Можно бы взять из Signature, но т.к. м.б. x32 и x64 гемор определять где находится файл
+            // так что лучше скопировать spki1utl.exe в рабочий каталог.
+            // В будущем переделаю
             if (!File.Exists("spki1utl.exe"))
             {
                 MessageBox.Show("Нет файла spki1utl.exe");
                 return false;
             }
+            
             return true;
 
         }

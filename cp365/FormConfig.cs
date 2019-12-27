@@ -23,7 +23,7 @@ namespace cp365
             this.afndir.Text = Config.AFNDir;
             this.invdir.Text = Config.INVDir;
             this.xsddir.Text = Config.XSDDir;
-            this.ptkini.Text = Config.PTKPath;
+            this.ptkdb.Text = Config.PTKDatabase;
             this.bik.Text = Config.BIK;
             this.fil.Text = Config.Filial;
             this.profile.Text = Config.Profile;
@@ -34,19 +34,34 @@ namespace cp365
             this.usePTK.Checked = Config.UsePTK;
             this.checkXSD.Checked = Config.UseXSD;
             this.makePB1.Checked = Config.CreatePB1;
-
+            this.noLicense.Checked = Config.NoLicense;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            Config.WorkDir = this.workdir.Text.Trim(); 
-            Config.TempDir = this.tempdir.Text.Trim();
-            Config.InDir = this.indir.Text.Trim(); ;
-            Config.OutDir = this.outdir.Text.Trim(); 
-            Config.AFNDir = this.afndir.Text.Trim();
-            Config.INVDir = this.invdir.Text;
-            Config.XSDDir = this.xsddir.Text;
-            Config.PTKPath = this.ptkini.Text;
+            if (CheckDirectory(this.workdir.Text.Trim()))
+                Config.WorkDir = this.workdir.Text.Trim();
+            else return;
+            if (CheckDirectory(this.tempdir.Text.Trim()))
+                Config.TempDir = this.tempdir.Text.Trim();
+            else return;
+            if (CheckDirectory(this.indir.Text.Trim()))
+                Config.InDir = this.indir.Text.Trim();
+            else return;
+            if (CheckDirectory(this.outdir.Text.Trim()))
+                Config.OutDir = this.outdir.Text.Trim();
+            else return;
+            if (CheckDirectory(this.afndir.Text.Trim()))
+                Config.AFNDir = this.afndir.Text.Trim();
+            else return;
+            Config.INVDir = this.invdir.Text; // может быть пустой - тогда не копировать
+            Config.XSDDir = this.xsddir.Text; // может быть пустой - тогда не проверять
+            Config.PTKDatabase = this.ptkdb.Text; // может быть пустой - тогда без ПТК ПСД
+            if (this.bik.Text.Length != 9 || !this.bik.Text.StartsWith("04"))
+            {
+                MessageBox.Show("Неверный БИК", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             Config.BIK = this.bik.Text;
             try
             {
@@ -56,18 +71,61 @@ namespace cp365
             {
                 Config.Filial = "0";
             }
-            Config.Profile = this.profile.Text.Trim();
-            Config.FNSKey = this.fnskey.Text;
-            Config.SerialNum = Convert.ToInt32(this.lastNum.Text);
-            Config.SerialDate = Util.DateFromYMD(this.lastDate.Text);
-            Config.UseVirtualFDD = this.virtualFDD.Checked;
-            Config.UsePTK = this.usePTK.Checked && File.Exists(this.ptkini.Text);
+            //Config.Profile = this.profile.Text.Trim();
+            //Config.FNSKey = this.fnskey.Text;
+            // здесь надо проверить профиль и ключ
+                if (Signature.CheckProfile(this.profile.Text))
+                {
+                  Config.Profile = this.profile.Text.Trim();
+                } else
+                {
+                     MessageBox.Show("Неверный профиль СКАД Сигнатура:" + this.profile.Text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            // проверяеи ключ
+            if (Signature.CheckKey(this.profile.Text.Trim(), this.fnskey.Text))
+            {
+                Config.FNSKey = this.fnskey.Text;
+            }
+            else
+            {
+                MessageBox.Show("Неверный ключ ФНС:" + this.fnskey.Text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (Config.SerialNum == 0)
+                Config.SerialNum = 1;
+            //Config.SerialNum = Convert.ToInt32(this.lastNum.Text);
+            //Config.SerialDate = Util.DateFromYMD(this.lastDate.Text);
+            if (this.virtualFDD.Checked)
+            {
+                if (!File.Exists("imdisk.exe"))
+                {
+                    MessageBox.Show("Включено использвание виртуального флоппи-диска\nно отсутствует IMDISK.EXE\nИспользование отключено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Config.UseVirtualFDD = false;
+                }
+                else
+                {
+                    Config.UseVirtualFDD = true;
+                }
+            }
+            if (this.usePTK.Checked)
+            {
+                if (!File.Exists(this.ptkdb.Text))
+                {
+                    MessageBox.Show("Включено использвание ПТК ПСД\nно отсутствует файл "+ this.ptkdb.Text+"\n"+
+                        "Использование ПДК ПСД отключено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Config.UsePTK = false;
+                }
+                else
+                {
+                    Config.UsePTK = true;
+                }
+            }
+            // проверка наличия файлов XSD в каталоге
+            // недоделано!
             Config.UseXSD = this.checkXSD.Checked && Directory.Exists(this.xsddir.Text);
             Config.CreatePB1 = this.makePB1.Checked;
-
-            Config.CreateDirectories(); // создаем необходимые каталоги
-            if (!Config.Check())
-                return;
+            Config.NoLicense = this.noLicense.Checked;
 
             this.Close();
         }
@@ -77,5 +135,25 @@ namespace cp365
             this.Close();
         }
 
+        // Проверить существование каталога directory
+        // Если каталог не существует, спросить о создании (Yes/No)
+        //   если No, то выйти с false
+        //   если Yes, создать и происвоить config_dir значение этого каталога
+        // Если каталог существует, config_dir = directory
+        private bool CheckDirectory(string directory)
+        {
+            if(!Directory.Exists(directory))
+            {
+                if (MessageBox.Show("Каталог " + directory + " не существует\nСоздать?", "Отсутствует каталог", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                {
+                    Directory.CreateDirectory(directory);
+                    return true;
+                }
+                else return false;
+            } else
+            {
+                return true;
+            }
+        }
     }
 }
