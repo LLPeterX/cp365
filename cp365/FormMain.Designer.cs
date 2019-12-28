@@ -87,8 +87,8 @@
             // исходящиеToolStripMenuItem
             // 
             this.исходящиеToolStripMenuItem.Name = "исходящиеToolStripMenuItem";
-            this.исходящиеToolStripMenuItem.Size = new System.Drawing.Size(77, 20);
-            this.исходящиеToolStripMenuItem.Text = "Исходящие";
+            this.исходящиеToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
+            this.исходящиеToolStripMenuItem.Text = "Отправка";
             // 
             // menuConfig
             // 

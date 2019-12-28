@@ -17,8 +17,9 @@ namespace cp365
         private static IniFile iniFile = null;
         private const string DEFAULT_DIR = @".\";
         private const string CONFIG_FILENAME = @".\cp365.ini";
-
-        public static string VersForm = "3.00";
+        public const string PROGRAM_NAME = "cp365";
+        public const string PROGRAM_VERSION = "1.0";
+        public const string FORM_VERSION = "3.00";
         // private members
 
         public static string TempDir
@@ -352,6 +353,11 @@ namespace cp365
             
             return true;
 
+        }
+
+        public static string ProgramVersion()
+        {
+            return PROGRAM_NAME + " " + PROGRAM_VERSION;
         }
 
     } // config  

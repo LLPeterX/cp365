@@ -12,15 +12,16 @@ namespace cp365
     public partial class FormMain
     {
         // 1. Выбрать файл AFN из каталога [Config.AFNDir]
-        // 2. [снять ЭЦП] - не сделано
-        // 3. Разврхивировать в TEMP
+        // 2. [снять ЭЦП с ARJ] - не реализовано, т.к. и так расшифровыает хорошо.
+        // 3. Разархивировать ARJ в TEMP
         // 4. Расшифровать *.vrb и переименовать в *.xml
-        // 5. Теперб всек файлы .xml подписаны. Снять ЭЦП
-        // 6. Скопировать в TO_INV и в IN\YYYYMMDD
+        // 5. Снять ЭЦП с *.xml
+        // 6. Скопировать *.xml в TO_INV и в IN\YYYYMMDD
+        // 7. Если включено создавать PB1, создать файлы PB1 в каталоге WORK
         public bool DecryptAFN()
         {
-            string tempDir = Config.TempDir;
-            // выбор файла AFN
+            string tempDir = Config.TempDir; // отдельная переменная, чтобы лишний раз не перечитывать файл .ini
+            // выбор файла AFNxxx.arj
             OpenFileDialog openAFN = new OpenFileDialog();
             openAFN.InitialDirectory = Config.AFNDir;
             openAFN.Filter = "ARJ files (*.arj)|*.arj";
@@ -44,9 +45,14 @@ namespace cp365
                 ps.WaitForExit();
                 // теперь в TEMP разархивированные файлы - *.vrb и *.xml
                 // расшифровать *.vrb в .xml
-                Signature.Initialize();
-                string[] vrbFiles = Directory.GetFiles(tempDir, "*.vrb"); // в массиве полные имена
-                foreach (string fname in vrbFiles)
+                if(!Signature.Initialize())
+            {
+                Util.CleanDirectory(tempDir);
+                return false;
+            }
+            // получаем список зашифрованных файлов (у них расширение .vrb) и пробуем расшифровать  
+            string[] vrbFiles = Directory.GetFiles(tempDir, "*.vrb"); // в массиве полные имена
+            foreach (string fname in vrbFiles) 
                 {
                     if (Signature.Decrypt(fname) != 0)
                     {
@@ -54,12 +60,12 @@ namespace cp365
                         Util.CleanDirectory(tempDir);
                         return false;
                     }
-                }
+            }
                 // снятие ЭЦП с файлов *.xml
                 string[] xmlFiles = Directory.GetFiles(tempDir, "*.xml");
                 foreach (string fname in xmlFiles)
                 {
-                    Signature.Delsign(fname);
+                    Signature.DeleteSign(fname);
                 }
                 // копирование в каталог IN\YYYYMMDD
                 string subdir = Config.InDir + "\\" + Util.DateToYMD(DateTime.Now);
@@ -112,18 +118,19 @@ namespace cp365
             return sb.ToString();
         }
 
+        // показать результат выполнения операции
         private void ShowProcess(bool active)
         {
             if(active)
             {
                 this.lbInfo.Visible = true;
                 this.lbInfo.Text = "Обработка...";
-                this.lbInfo.Left = (this.Width - lbInfo.Width) / 2;
+                this.lbInfo.Left = (this.Width - this.lbInfo.Width) / 2;
             } else
             {
                 this.lbInfo.Visible = false;
             }
-            this.Refresh();
+            this.lbInfo.Refresh();
         }
 
     }

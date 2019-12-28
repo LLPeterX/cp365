@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Xml;
 
 namespace cp365
 {
@@ -18,37 +19,43 @@ namespace cp365
         private PBTYPE pbType;
         private string pbErrCode;
         private string pbMessage;
-        public PB(string fileName, PBTYPE type, string errorCode="01", string errorMessage="")
+        public PB(string srcFileName, PBTYPE type, string errorCode="01", string errorMessage="")
         {
-            this.sourceName = Path.GetFileName(fileName).ToUpper();
+            this.sourceName = Path.GetFileName(srcFileName).ToUpper();
             this.pbType = type;
             this.pbErrCode = errorCode;
             this.pbMessage = errorMessage;
             this.pbFileName = "PB" + type.ToString("d") + "_" + this.sourceName;
+            /*
             switch(type)
             {
                 case PBTYPE.GOOD:
                     xmlText = "<?xml version=\"1.0\" encoding=\"windows-1251\"?>"+
        "<Файл ИдЭС=\""+Util.GUID()+"\" ТипИнф=\"ПОДБНПРИНТ\" ВерсПрог=\"cp365 1.0\""+
-       " ТелОтпр=\""+Config.TelOtpr+"\" ДолжнОтпр=\""+Config.DolOtpr+"\" ФамОтпр=\"" + Config.FamOtpr+"\" ВерсФорм=\""+Config.VersForm+
+       " ТелОтпр=\""+Config.TelOtpr+"\" ДолжнОтпр=\""+Config.DolOtpr+"\" ФамОтпр=\"" + Config.FamOtpr+"\" ВерсФорм=\""+Config.FORM_VERSION+
        "\">"+
-       "<ПОДБНПРИНТ ИмяФайла=\""+fileName + "\" ДатаВремяПроверки = \"" + Util.XMLDate(DateTime.Now) + "\">" +
+       "<ПОДБНПРИНТ ИмяФайла=\""+srcFileName + "\" ДатаВремяПроверки = \"" + Util.XMLDate(DateTime.Now) + "\">" +
        " <Результат КодРезПроверки=\"01\"/>" +
        "</ПОДБНПРИНТ>" +
        "</Файл>";
                     break;
                 case PBTYPE.ERROR:
                     xmlText = "<?xml version=\"1.0\" encoding=\"windows-1251\"?>" +
-       "<Файл ИдЭС=\"" + Util.GUID() + "\" ТипИнф=\"ПОДБНПРИНТ\" ВерсПрог=\"cp365 1.0\"" +
-       " ТелОтпр=\"" + Config.TelOtpr + "\" ДолжнОтпр=\"" + Config.DolOtpr + "\" ФамОтпр=\"" + Config.FamOtpr + "\" ВерсФорм=\"" + Config.VersForm +
+       "<Файл ИдЭС=\"" + Util.GUID() + "\" ТипИнф=\"ПОДБНПРИНТ\" ВерсПрог=\""+Config.ProgramVersion()+
+       "\" ТелОтпр=\"" + Config.TelOtpr + "\" ДолжнОтпр=\"" + Config.DolOtpr + "\" ФамОтпр=\"" + Config.FamOtpr + "\" ВерсФорм=\"" + Config.FORM_VERSION +
        "\">" +
-       "<ПОДБНПРИНТ ИмяФайла=\"" + fileName + "\" ДатаВремяПроверки = \"" + Util.XMLDate(DateTime.Now) + "\">" +
+       "<ПОДБНПРИНТ ИмяФайла=\"" + srcFileName + "\" ДатаВремяПроверки = \"" + Util.XMLDate(DateTime.Now) + "\">" +
        " <Результат КодРезПроверки=\""+errorCode+"\" Пояснение=\""+errorMessage+"\"/>" +
        "</ПОДБНПРИНТ>" +
        "</Файл>";
                     break;
 
             }
+            */
+            if (type == PBTYPE.GOOD)
+                this.xmlText = GetPBContent(srcFileName);
+            else
+                this.xmlText = GetPBContent(srcFileName, errorCode, errorMessage);
         }
         override public string ToString()
         {
@@ -60,8 +67,41 @@ namespace cp365
             string outFileName = workdir + "\\" + this.pbFileName;
             File.WriteAllText(outFileName, this.xmlText, Encoding.GetEncoding(1251));
         }
+
+        // вариант через XML
+        public string GetPBContent(string srcFileName, string errorCode = "01", string errorMessage = "У банка отозвана лицензия")
+        {
+            XmlDocument xml = new XmlDocument();
+            XmlDeclaration xmlDecl = xml.CreateXmlDeclaration("1.0", "windows-1251", null);
+            xml.AppendChild(xmlDecl);
+            XmlElement root = xml.CreateElement("Файл");
+            xml.AppendChild(root);
+            //root.GetAttribute("xmlns", "urn:cbr-365Р:stop: v.3.00"); // это не используется, убрано в 440-П
+            root.SetAttribute("ИдЭС", Util.GUID());
+            root.SetAttribute("ТипИнф", "ПОДБНПРИНТ");
+            root.SetAttribute("ВерсПрог", Config.ProgramVersion());
+            root.SetAttribute("ТелОтпр", Config.TelOtpr);
+            root.SetAttribute("ДолжнОтпр", Config.DolOtpr);
+            root.SetAttribute("ФамОтпр", Config.FamOtpr);
+            root.SetAttribute("ВерсФорм", Config.FORM_VERSION);
+            XmlElement body = xml.CreateElement("ПОДБНПРИНТ");
+            root.AppendChild(body);
+            body.SetAttribute("ИмяФайла", Path.GetFileNameWithoutExtension(srcFileName));
+            body.SetAttribute("ДатаВремяПроверки", Util.XMLDateTime(DateTime.Now));
+            XmlElement result = xml.CreateElement("Результат");
+            body.AppendChild(result);
+            result.SetAttribute("КодРезПроверки", errorCode);
+            if(errorCode != "01")
+            {
+                result.SetAttribute("Пояснение", errorMessage);
+            }
+            return xml.InnerXml;
+        }
     }
 
+    
+
+   
    
 
     public enum PBTYPE

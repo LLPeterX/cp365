@@ -50,12 +50,17 @@ namespace cp365
 
         public static string GUID()
         {
-            return Guid.NewGuid().ToString();
+            return Guid.NewGuid().ToString().ToUpper();
         }
 
         public static string XMLDate(DateTime d)
         {
             return d.ToString("yyyy-MM-dd");
+        }
+        // получить имя файла без расширения
+        public static string XMLDateTime(DateTime d)
+        {
+            return d.ToString("yyyy-MM-ddTHH:MM:SS");
         }
     }
 }

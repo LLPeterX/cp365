@@ -37,15 +37,7 @@ namespace cp365
 
         private void processAFN(object sender, EventArgs e)
         {
-            // взять файл из каталога AFN
-            // снять с него подпись
-            // распаковать в TEMP
-            // расшифровать TEMP\*.vrb
-            // снять подпись с TEMP\*.xml
-            // скопировать *.xml в TO_INV, IN\yyyyMMdd
-            // на файлы PNO создать WORK\PB2
             DecryptAFN();
-            //this.lbInfo.Visible = false;
             ShowProcess(false);
 
         }

@@ -35,9 +35,9 @@ namespace cp365
         // 1) проверяем - есть ли A: ключи на нем
         //    если нет - монтируем ч/з imdisk образ "profile.IMG" на диск А:
         // 2) Проверяем наличие A:\vdkeys
-        static public int Initialize()
+        static public bool Initialize()
         {
-            if (isInitialized) return 0; // success
+            if (isInitialized) return true; // success
 
             SIG_PROFILE = Config.Profile;
             CheckProfile(SIG_PROFILE);
@@ -48,13 +48,13 @@ namespace cp365
                 if (!File.Exists("imdisk.exe") && Config.UseVirtualFDD)
                 {
                     MessageBox.Show("Не найден файл imdisk.exe");
-                    return 1;
+                    return false;
                 }
                 String imgFileName = SIG_PROFILE + ".img";
                 if (!File.Exists(imgFileName))
                 {
                     MessageBox.Show("Не найден файл " + imgFileName);
-                    return 1;
+                    return false;
                 }
                 // запускаем imdisk
                 Process ps = new Process();
@@ -70,16 +70,15 @@ namespace cp365
             {
                 isInitialized = true;
                 use_virtual_fdd = true;
-                return 0;
+                return true;
             }
             else
             {
                 MessageBox.Show("Ошибка - на диске A: нет ключей");
                 isInitialized = false;
                 use_virtual_fdd = false;
-                return 1;
+                return false;
             }
-            //return 1;
         }
         static public void Unload()
         {
@@ -144,11 +143,11 @@ namespace cp365
         {
             string new_name = file_name.ToUpper().Replace(".VRB", ".gz");
             String args = "-decrypt -profile " + SIG_PROFILE + " -registry -in " + file_name + " -out " + new_name;
-            string result = null;
+            string result;
             ExecuteSpki(args, out result);
             if (IsSuccess(result))
             {
-                ungzip(new_name);
+                ungzip(new_name,".xml");
                 File.Delete(file_name);
 
                 return 0;
@@ -160,14 +159,15 @@ namespace cp365
             }
         }
 
-        static public int Delsign(String file_name)
+        // снятие ЭЦП: сначала .xml->.dec, потом переименовать обратно
+        static public int DeleteSign(String srcFileName)
         {
-            String cleanName = file_name + ".dec";
-            String args = "-verify -delete 1 -profile " + SIG_PROFILE + " -registry -in " + file_name + " -out " + cleanName;
+            String dstFileName = srcFileName + ".dec";
+            String args = "-verify -delete 1 -profile " + SIG_PROFILE + " -registry -in " + srcFileName + " -out " + dstFileName;
 
             string result = null;
             ExecuteSpki(args, out result);
-            return revertFile(file_name, cleanName) ? 0 : 1;
+            return revertFile(srcFileName, dstFileName) ? 0 : 1;
 
         }
 
@@ -186,10 +186,11 @@ namespace cp365
         }
 
         // нииже хуйня. код лучше: https://docs.microsoft.com/ru-ru/dotnet/api/system.io.compression.gzipstream?view=netframework-4.8
-        // Распаковать файл VRB в XML (.gz получен после decrypt vrb)
-        static public void ungzip(String zipName)
+        // Распаковать файл VRB в dec (.gz получен после decrypt vrb)
+        // файлы .dec потом используютcя в Delsign()
+        static public void ungzip(string zipName, string newExtension)
         {
-            String xmlName = zipName.Replace(".gz", ".xml");
+            String xmlName = zipName.Replace(".gz", newExtension);
             using (FileStream gzipFileStream = new FileStream(zipName,FileMode.Open))
             {
                 using (FileStream decompressedFileStream = File.Create(xmlName))
@@ -241,6 +242,7 @@ namespace cp365
             ps.StartInfo.UseShellExecute = false;
             ps.StartInfo.RedirectStandardError = true;
             ps.StartInfo.CreateNoWindow = true;
+            ps.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             ps.StartInfo.StandardErrorEncoding = Encoding.GetEncoding("CP866");
             ps.Start();
             result = ps.StandardError.ReadToEnd();
