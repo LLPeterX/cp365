@@ -23,6 +23,7 @@ namespace cp365
             this.afndir.Text = Config.AFNDir;
             this.invdir.Text = Config.INVDir;
             this.xsddir.Text = Config.XSDDir;
+            //this.ptkdb.Text = Config.PTKiniFile;
             this.ptkdb.Text = Config.PTKDatabase;
             this.bik.Text = Config.BIK;
             this.fil.Text = Config.Filial;
@@ -42,6 +43,7 @@ namespace cp365
 
         private void btnOK_Click(object sender, EventArgs e)
         {
+            string warnings = "";
             if (CheckDirectory(this.workdir.Text.Trim()))
                 Config.WorkDir = this.workdir.Text.Trim();
             else return;
@@ -59,32 +61,39 @@ namespace cp365
             else return;
             Config.INVDir = this.invdir.Text; // может быть пустой - тогда не копировать
             Config.XSDDir = this.xsddir.Text; // может быть пустой - тогда не проверять
-            Config.PTKDatabase = this.ptkdb.Text; // может быть пустой - тогда без ПТК ПСД
+            if (File.Exists(this.ptkdb.Text))
+                Config.PTKDatabase = this.ptkdb.Text; // может быть пустой - тогда без ПТК ПСД
+            else
+            {
+                warnings += "Файла " + this.ptkdb.Text + "не существует\n";
+                Config.PTKDatabase = "";
+                Config.UsePTK = false;
+            }
             if (this.bik.Text.Length != 9 || !this.bik.Text.StartsWith("04"))
             {
                 MessageBox.Show("Неверный БИК", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             Config.BIK = this.bik.Text;
-            try
+            if (this.fil.Text.Length != 4)
             {
-                int tmp = Convert.ToInt32(this.fil.Text);
-                Config.Filial = this.fil.Text;
-            } catch
-            {
-                Config.Filial = "0";
+                //MessageBox.Show("N филиала должен быть 4 цифры");
+                warnings += "N филиала должен быть 4 цифры. Установлено 0000";
+                Config.Filial = "0000";
             }
-            //Config.Profile = this.profile.Text.Trim();
-            //Config.FNSKey = this.fnskey.Text;
+            else
+            {
+                Config.Filial = this.fil.Text;
+            }
             // здесь надо проверить профиль и ключ
-                if (Signature.CheckProfile(this.profile.Text))
+           if (Signature.CheckProfile(this.profile.Text))
                 {
                   Config.Profile = this.profile.Text.Trim();
                 } else
                 {
-                     MessageBox.Show("Неверный профиль СКАД Сигнатура:" + this.profile.Text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                     MessageBox.Show("Неверный профиль СКАД \"Сигнатура\":" + this.profile.Text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
-                }
+            }
             // проверяеи ключ
             if (Signature.CheckKey(this.profile.Text.Trim(), this.fnskey.Text))
             {
@@ -92,18 +101,17 @@ namespace cp365
             }
             else
             {
-                MessageBox.Show("Неверный ключ ФНС:" + this.fnskey.Text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ключ ФНС " + this.fnskey.Text+"\nне найден в хранилище сертификатов", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (Config.SerialNum == 0)
                 Config.SerialNum = 1;
-            //Config.SerialNum = Convert.ToInt32(this.lastNum.Text);
-            //Config.SerialDate = Util.DateFromYMD(this.lastDate.Text);
             if (this.virtualFDD.Checked)
             {
                 if (!File.Exists("imdisk.exe"))
                 {
-                    MessageBox.Show("Включено использвание виртуального флоппи-диска\nно отсутствует IMDISK.EXE\nИспользование отключено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //MessageBox.Show("Включено использвание виртуального флоппи-диска\nно отсутствует IMDISK.EXE\nИспользование отключено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    warnings+= "\nВключено использвание виртуального флоппи-диска\nно отсутствует IMDISK.EXE\nИспользование отключено\n";
                     Config.UseVirtualFDD = false;
                 }
                 else
@@ -115,24 +123,34 @@ namespace cp365
             {
                 if (!File.Exists(this.ptkdb.Text))
                 {
-                    MessageBox.Show("Включено использвание ПТК ПСД\nно отсутствует файл "+ this.ptkdb.Text+"\n"+
-                        "Использование ПДК ПСД отключено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    warnings += "\nНе найден файл " + this.ptkdb.Text + "\nИспользование ПТК ПСД отключено\n";
+                    //MessageBox.Show("Включено использвание ПТК ПСД\nно отсутствует файл "+ this.ptkini.Text+"\n"+
+                    //    "Использование ПДК ПСД отключено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     Config.UsePTK = false;
                 }
                 else
                 {
                     Config.UsePTK = true;
                 }
+            } else
+            {
+                Config.UsePTK = false;
             }
             // проверка наличия файлов XSD в каталоге
             // недоделано!
-            Config.UseXSD = this.checkXSD.Checked && Directory.Exists(this.xsddir.Text);
+            Config.UseXSD = this.checkXSD.Checked && Directory.Exists(this.xsddir.Text); // пока не используется
             Config.CreatePB1 = this.makePB1.Checked;
-            Config.NoLicense = this.noLicense.Checked;
+            Config.NoLicense = this.noLicense.Checked; // на файлы PNO, RPO автоматически выдаем PB2
+            if (this.tel.Text.Length < 2 || this.dolgn.Text.Length < 2 || this.family.Text.Length<2)
+            {
+                MessageBox.Show("Не заполнены все поля представителя банка\n(Фамилия, должность, телефон)", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             Config.TelOtpr = this.tel.Text;
             Config.DolOtpr = this.dolgn.Text;
             Config.FamOtpr = this.family.Text;
-
+            if (warnings.Length > 2)
+                MessageBox.Show(warnings, "Ошибки кофигурации", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             this.Close();
         }
 
@@ -144,7 +162,7 @@ namespace cp365
         // Проверить существование каталога directory
         // Если каталог не существует, спросить о создании (Yes/No)
         //   если No, то выйти с false
-        //   если Yes, создать и происвоить config_dir значение этого каталога
+        //   если Yes, создать и присвоить config_dir значение этого каталога
         // Если каталог существует, config_dir = directory
         private bool CheckDirectory(string directory)
         {

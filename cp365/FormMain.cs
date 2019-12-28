@@ -18,9 +18,7 @@ namespace cp365
                 Application.Exit();
 
             InitializeComponent();
-            
-           
-
+            EnableOrDisableMenuItems();
         }
 
         private void menuExit_Click(object sender, EventArgs e)
@@ -32,19 +30,21 @@ namespace cp365
         {
             // Конфигурирование приложения
             FormConfig fconfig = new FormConfig();
-            fconfig.Show();
+            fconfig.ShowDialog();
+            EnableOrDisableMenuItems(); // почему эта хрень не выполняется?
         }
 
         private void processAFN(object sender, EventArgs e)
         {
-            DecryptAFN();
+            DecryptAFN(null); // предполагается выбор файла вручную
             ShowProcess(false);
 
         }
 
-        private void processPTK(object sender, EventArgs e)
+        private void EnableOrDisableMenuItems()
         {
-
+            this.menuProcessPTK.Enabled = Config.UsePTK;
         }
+
     }
 }

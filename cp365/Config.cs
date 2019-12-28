@@ -110,6 +110,17 @@ namespace cp365
                 SetValue("PTK", "Database", value);
             }
         }
+        //public static string PTKiniFile
+        //{
+        //    get
+        //    {
+        //        return GetValue("PTK", "INI file", "");
+        //    }
+        //    set
+        //    {
+        //        SetValue("PTK", "INI file", value);
+        //    }
+        //}
         public static string BIK
         {
             get

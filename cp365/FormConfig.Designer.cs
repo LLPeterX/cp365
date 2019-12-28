@@ -150,9 +150,9 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(30, 254);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(118, 13);
+            this.label9.Size = new System.Drawing.Size(117, 13);
             this.label9.TabIndex = 8;
-            this.label9.Text = "Файл elo.ini ПТК ПСД";
+            this.label9.Text = "Файл базы ПТК ПСД";
             // 
             // workdir
             // 

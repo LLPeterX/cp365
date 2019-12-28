@@ -11,6 +11,7 @@ namespace cp365
 {
     public partial class FormMain
     {
+        // параметром передается полный путь к файлу AFN
         // 1. Выбрать файл AFN из каталога [Config.AFNDir]
         // 2. [снять ЭЦП с ARJ] - не реализовано, т.к. и так расшифровыает хорошо.
         // 3. Разархивировать ARJ в TEMP
@@ -18,22 +19,29 @@ namespace cp365
         // 5. Снять ЭЦП с *.xml
         // 6. Скопировать *.xml в TO_INV и в IN\YYYYMMDD
         // 7. Если включено создавать PB1, создать файлы PB1 в каталоге WORK
-        public bool DecryptAFN()
+        public bool DecryptAFN(string afnFileName)
         {
             string tempDir = Config.TempDir; // отдельная переменная, чтобы лишний раз не перечитывать файл .ini
+            string AFNname;
             // выбор файла AFNxxx.arj
-            OpenFileDialog openAFN = new OpenFileDialog();
-            openAFN.InitialDirectory = Config.AFNDir;
-            openAFN.Filter = "ARJ files (*.arj)|*.arj";
-            openAFN.FilterIndex = 0;
-            openAFN.RestoreDirectory = true;
-            if (openAFN.ShowDialog() != DialogResult.OK)
-                return false;
-            //            this.lbInfo.Text = "Обработка...";
-            //            this.lbInfo.Visible = true;
-            ShowProcess(true);
-            
-                string AFNname = Path.GetFullPath(openAFN.FileName);
+            if (afnFileName == null)
+            {
+                OpenFileDialog openAFN = new OpenFileDialog();
+                openAFN.InitialDirectory = Config.AFNDir;
+                openAFN.Filter = "ARJ files (*.arj)|*.arj";
+                openAFN.FilterIndex = 0;
+                openAFN.RestoreDirectory = true;
+                if (openAFN.ShowDialog() != DialogResult.OK)
+                    return false;
+                //            this.lbInfo.Text = "Обработка...";
+                //            this.lbInfo.Visible = true;
+                ShowProcess(true);
+
+                AFNname = Path.GetFullPath(openAFN.FileName);
+            } else
+            {
+                AFNname = afnFileName;
+            }
                 // надо ли снимать ЭЦП, если и так все прекрасно разархивируется?
                 // разархивируем AFN
                 Util.CleanDirectory(Config.TempDir);

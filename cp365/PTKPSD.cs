@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
+using System.Data.Odbc;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace cp365
 {
@@ -30,47 +32,80 @@ namespace cp365
         WHERE     (elo_arh_post.posttype = 'mz') AND (elo_arh_post.dt BETWEEN #12/24/2019# AND #12/27/2019#)
 
         Параметры запроса см. https://stackoverflow.com/questions/37883432/select-data-from-ms-access-database-by-date-in-c-sharp
+        Но мы будем юзать тормозной ODBC, созданный для ПТК ПСД
      */
     class PTKPSD
     {
-        private string iniPath;
         //private string archPostDir; // не подходит, т.к. файлы зашифрованы ключом ПТК, к которому нет доступа
         private string eloDir;
-        private string outPostDir;
-        //private string dbPath;
-        private IniFile iniFile;
-        private string tmpDir;
-        private string DSN;
+        private string dbPath;
         private string connectionString;
+        private string errorMessage;
 
-        public PTKPSD(string iniPath)
+        public PTKPSD(string dbName)
         {
-            iniFile = new IniFile(iniPath);
-            this.iniPath = iniPath;
-            this.DSN = iniFile.Read("ODBC", "DataBase");
-            this.connectionString = "Provider = Microsoft.Jet.OLEDB.4.0; DSN = " + this.DSN+ ";User Id=admin;Password=;";
-            this.tmpDir = iniFile.Read("TMP", "Path");
-            this.outPostDir = iniFile.Read("OUTPOST", "Path");
-            //this.archPostDir = iniFile.Read("ARCHIVESTORE", "Path");
-            this.eloDir = GetELODir();
+            try
+            {
+                //this.connectionString = "Provider = Microsoft.Jet.OLEDB.4.0; DSN = " + this.DSN+ ";User Id=admin;Password=;";
+                this.dbPath = dbName;
+                this.connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="+dbPath+
+                    ";User Id=admin;Password=;";
+                //this.connectionString = "DSN=" + this.DSN;
+                //this.tmpDir = iniFile.Read("TMP", "Path");
+                //this.outPostDir = iniFile.Read("OUTPOST", "Path");
+                this.eloDir = GetELODir();
+            } catch (Exception e)
+            {
+                this.eloDir = null;
+                this.errorMessage = e.Message;
+            }
 
         }
 
+        // В ELO только входящие файлы - они нас и интересуют
         private string GetELODir()
         {
-            string strSQL = "SELECT path_out FROM elo_path WHERE ecp='check'";
+            string strSQL = "SELECT path_out FROM elo_path WHERE (ecp='check')";
             string elo_dir = null;
-            using (OleDbConnection conn = new OleDbConnection(connectionString))
+            try
             {
-                conn.Open();
-                OleDbCommand cmd = new OleDbCommand(strSQL, conn);
-                using (OleDbDataReader reader = cmd.ExecuteReader())
+                using (OleDbConnection connection = new OleDbConnection(connectionString))
                 {
-                    elo_dir = (String)reader[0];
+                    connection.Open();
+                    OleDbCommand cmd = new OleDbCommand(strSQL, connection);
+                    using (OleDbDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        elo_dir = reader[0].ToString();
+                    }
                 }
+                return elo_dir;
+            } catch (Exception e)
+            {
+                this.errorMessage = e.Message;
+                return null;
             }
-            return elo_dir;
+
+
         }
+
+        // public methods
+        public bool IsSuccess(out string errorMsg)
+        {
+            if(this.eloDir != null)
+            {
+                errorMsg = null;
+                return true;
+            }
+            errorMsg = this.errorMessage;
+            return false;
+        }
+
+        public string GetPackagesDirectory()
+        {
+            return this.eloDir;
+        }
+
 
     }
 }
