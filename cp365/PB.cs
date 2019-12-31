@@ -19,13 +19,18 @@ namespace cp365
         private PBTYPE pbType;
         private string pbErrCode;
         private string pbMessage;
-        public PB(string srcFileName, PBTYPE type, string errorCode="01", string errorMessage="")
+        private string filNumber;
+        public PB(string srcFileName, PBTYPE type, string errorCode="01", string errorMessage="", string fil="0000")
         {
-            this.sourceName = Path.GetFileName(srcFileName).ToUpper();
+            this.sourceName = Path.GetFileNameWithoutExtension(srcFileName).ToUpper();
             this.pbType = type;
             this.pbErrCode = errorCode;
             this.pbMessage = errorMessage;
-            this.pbFileName = "PB" + type.ToString("d") + "_" + this.sourceName;
+            this.filNumber = fil;
+            if(pbType == PBTYPE.GOOD)
+              this.pbFileName = "PB1" + "_" + this.sourceName+".xml";
+            else
+                this.pbFileName = "PB2" + "_" + this.sourceName+"_"+this.filNumber+".xml";
             /*
             switch(type)
             {
@@ -86,7 +91,7 @@ namespace cp365
             root.SetAttribute("ВерсФорм", Config.FORM_VERSION);
             XmlElement body = xml.CreateElement("ПОДБНПРИНТ");
             root.AppendChild(body);
-            body.SetAttribute("ИмяФайла", Path.GetFileNameWithoutExtension(srcFileName));
+            body.SetAttribute("ИмяФайла", this.sourceName);
             body.SetAttribute("ДатаВремяПроверки", Util.XMLDateTime(DateTime.Now));
             XmlElement result = xml.CreateElement("Результат");
             body.AppendChild(result);
@@ -98,11 +103,6 @@ namespace cp365
             return xml.InnerXml;
         }
     }
-
-    
-
-   
-   
 
     public enum PBTYPE
     {

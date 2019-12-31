@@ -46,5 +46,10 @@ namespace cp365
             this.menuProcessPTK.Enabled = Config.UsePTK;
         }
 
+        private void ProcessPackagesFromPTK(object sender, EventArgs e)
+        {
+            FormPTK ptkForm = new FormPTK();
+            ptkForm.ShowDialog();
+        }
     }
 }

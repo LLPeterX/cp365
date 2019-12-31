@@ -75,7 +75,7 @@
             this.menuProcessPTK.Name = "menuProcessPTK";
             this.menuProcessPTK.Size = new System.Drawing.Size(194, 22);
             this.menuProcessPTK.Text = "Взять файл из ПТК ПСД";
-            this.menuProcessPTK.Click += new System.EventHandler(this.processPTK);
+            this.menuProcessPTK.Click += new System.EventHandler(this.ProcessPackagesFromPTK);
             // 
             // menuExitIn
             // 

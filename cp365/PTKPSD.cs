@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Data.OleDb;
 using System.Data.Odbc;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 
 namespace cp365
@@ -37,10 +38,10 @@ namespace cp365
     class PTKPSD
     {
         //private string archPostDir; // не подходит, т.к. файлы зашифрованы ключом ПТК, к которому нет доступа
-        private string eloDir;
+        public string eloDir;
         private string dbPath;
         private string connectionString;
-        private string errorMessage;
+        public string errorMessage;
 
         public PTKPSD(string dbName)
         {
@@ -66,7 +67,6 @@ namespace cp365
         private string GetELODir()
         {
             string strSQL = "SELECT path_out FROM elo_path WHERE (ecp='check')";
-            string elo_dir = null;
             try
             {
                 using (OleDbConnection connection = new OleDbConnection(connectionString))
@@ -76,20 +76,18 @@ namespace cp365
                     using (OleDbDataReader reader = cmd.ExecuteReader())
                     {
                         reader.Read();
-                        elo_dir = reader[0].ToString();
+                        //return reader[0].ToString();
+                        return reader[0].ToString().Replace("N:", "C:"); // for local testing
                     }
                 }
-                return elo_dir;
             } catch (Exception e)
             {
                 this.errorMessage = e.Message;
                 return null;
             }
-
-
         }
 
-        // public methods
+        // Проврерка, что экземпляр создан успешно
         public bool IsSuccess(out string errorMsg)
         {
             if(this.eloDir != null)
@@ -106,6 +104,60 @@ namespace cp365
             return this.eloDir;
         }
 
+        // параметры - строковые в виде MM/dd/yyyy
+        public List<MZFile> GetMzFiles(string dateFrom, string dateTo, out string errorMessage)
+        {
 
+            string sqlTemplate =
+                "SELECT elo_arh_post.filename as filename, elo_arh_post.dt as dt, "+
+                "elo_arh_post.state_, elo_spr_state.name_st, " +
+                "elo_arh_post.error_, elo_spr_err.ErrText "+
+        "FROM((elo_arh_post "+
+          "INNER JOIN elo_spr_err ON elo_arh_post.error_ = elo_spr_err.ErrCod) "+
+          "INNER JOIN elo_spr_state ON elo_arh_post.state_ = elo_spr_state.kot_st) "+
+        "WHERE(elo_arh_post.posttype = 'mz') AND (elo_arh_post.filetype = 'ИЭС2') "+
+              " AND (elo_arh_post.dt BETWEEN #@1# AND #@2#) "+
+              "ORDER BY elo_arh_post.dt";
+            // 0:filetype, 1:dt, 2:filename, 3:state, 4:stateText, 5: err, 6:err_text
+            // даты в виде "#mm/dd/YYYY#"
+            string strSQL = sqlTemplate.Replace("@1", dateFrom).Replace("@2", dateTo);
+            List<MZFile> result = new List<MZFile>();
+            errorMessage =null;
+            // надо вывести: mzName, fileName, дата/время
+            try
+            {
+                using (OleDbConnection connection = new OleDbConnection(connectionString))
+                {
+                    connection.Open();
+                    OleDbCommand cmd = new OleDbCommand(strSQL, connection);
+                    using (OleDbDataReader reader = cmd.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            string mzfile = reader["filename"].ToString();
+                            string fullPath = eloDir + mzfile.Substring(0, 12); // с расширением, но отбрасываем лишнее расширение
+                            MZFile mz = new MZFile(fullPath);
+                            if(mz!=null && mz.fileName!=null)
+                            {
+                                //string strTime = reader.GetString(1);
+                                string strTime = reader["dt"].ToString();
+                                mz.mzFileDate = Util.DateFromSQL(strTime);
+                                result.Add(mz);
+                            } else
+                            {
+                                errorMessage+="Ошибка обработки "+mzfile+"\n";
+                            }
+                        }
+                        
+                    }
+                }
+                return result;
+            }
+            catch (Exception e)
+            {
+                errorMessage += e.Message;
+                return null;
+            }
+        }
     }
 }

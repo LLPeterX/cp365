@@ -8,3 +8,7 @@ C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\cp365.exe
 C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\cp365.pdb
 C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.exe
 C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.pdb
+C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.FormPTK.resources
+C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\Microsoft.Deployment.Compression.Cab.dll
+C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\Microsoft.Deployment.Compression.dll
+C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.csproj.CopyComplete

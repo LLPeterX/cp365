@@ -60,7 +60,24 @@ namespace cp365
         // получить имя файла без расширения
         public static string XMLDateTime(DateTime d)
         {
-            return d.ToString("yyyy-MM-ddTHH:MM:SS");
+            //return d.ToString("yyyy-MM-ddThh:mm:ss");
+            return d.ToString("s");
+        }
+
+        public static string DateToSQL(DateTime d)
+        {
+            return d.ToString("MM/dd/yyyy");
+        }
+        public static DateTime DateFromSQL(string s)
+        {
+            if (!String.IsNullOrEmpty(s))
+            {
+                //return DateTime.ParseExact(s, "s", System.Globalization.CultureInfo.InvariantCulture);
+                DateTime d = DateTime.ParseExact(s, "dd.MM.yyyy h:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                return d;
+            }
+            else
+                return DateTime.Now;
         }
     }
 }
