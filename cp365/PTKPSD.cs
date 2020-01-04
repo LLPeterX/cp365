@@ -66,7 +66,7 @@ namespace cp365
         // В ELO только входящие файлы - они нас и интересуют
         private string GetELODir()
         {
-            string strSQL = "SELECT path_out FROM elo_path WHERE (ecp='check')";
+            /*string strSQL = "SELECT path_out FROM elo_path WHERE (ecp='check')";
             try
             {
                 using (OleDbConnection connection = new OleDbConnection(connectionString))
@@ -84,7 +84,8 @@ namespace cp365
             {
                 this.errorMessage = e.Message;
                 return null;
-            }
+            }*/
+            return Config.ELODir;
         }
 
         // Проврерка, что экземпляр создан успешно

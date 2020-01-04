@@ -48,14 +48,14 @@
             this.dataGrid.Location = new System.Drawing.Point(13, 13);
             this.dataGrid.Name = "dataGrid";
             this.dataGrid.ReadOnly = true;
-            this.dataGrid.Size = new System.Drawing.Size(775, 336);
+            this.dataGrid.Size = new System.Drawing.Size(518, 336);
             this.dataGrid.TabIndex = 0;
             this.dataGrid.SelectionChanged += new System.EventHandler(this.dataGrid_SelectionChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(97, 373);
+            this.label1.Location = new System.Drawing.Point(22, 373);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(88, 13);
             this.label1.TabIndex = 1;
@@ -64,7 +64,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(417, 373);
+            this.label2.Location = new System.Drawing.Point(290, 373);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(81, 13);
             this.label2.TabIndex = 2;
@@ -72,25 +72,29 @@
             // 
             // dateFrom
             // 
-            this.dateFrom.Location = new System.Drawing.Point(192, 369);
+            this.dateFrom.CustomFormat = "dd.MM.yyyy HH:mm.ss";
+            this.dateFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateFrom.Location = new System.Drawing.Point(117, 369);
             this.dateFrom.MaxDate = new System.DateTime(2026, 12, 31, 0, 0, 0, 0);
             this.dateFrom.MinDate = new System.DateTime(2017, 1, 1, 0, 0, 0, 0);
             this.dateFrom.Name = "dateFrom";
-            this.dateFrom.Size = new System.Drawing.Size(200, 20);
+            this.dateFrom.Size = new System.Drawing.Size(127, 20);
             this.dateFrom.TabIndex = 3;
             // 
             // dateTo
             // 
-            this.dateTo.Location = new System.Drawing.Point(504, 369);
+            this.dateTo.CustomFormat = "dd.MM.yyyy HH:mm.ss";
+            this.dateTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateTo.Location = new System.Drawing.Point(377, 369);
             this.dateTo.MaxDate = new System.DateTime(2026, 12, 31, 0, 0, 0, 0);
             this.dateTo.MinDate = new System.DateTime(2017, 1, 1, 0, 0, 0, 0);
             this.dateTo.Name = "dateTo";
-            this.dateTo.Size = new System.Drawing.Size(200, 20);
+            this.dateTo.Size = new System.Drawing.Size(127, 20);
             this.dateTo.TabIndex = 4;
             // 
             // btnRenew
             // 
-            this.btnRenew.Location = new System.Drawing.Point(270, 415);
+            this.btnRenew.Location = new System.Drawing.Point(142, 415);
             this.btnRenew.Name = "btnRenew";
             this.btnRenew.Size = new System.Drawing.Size(75, 23);
             this.btnRenew.TabIndex = 5;
@@ -101,7 +105,7 @@
             // btnExit
             // 
             this.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnExit.Location = new System.Drawing.Point(456, 415);
+            this.btnExit.Location = new System.Drawing.Point(328, 415);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(75, 23);
             this.btnExit.TabIndex = 6;
@@ -112,7 +116,7 @@
             // btnProcess
             // 
             this.btnProcess.Enabled = false;
-            this.btnProcess.Location = new System.Drawing.Point(363, 415);
+            this.btnProcess.Location = new System.Drawing.Point(235, 415);
             this.btnProcess.Name = "btnProcess";
             this.btnProcess.Size = new System.Drawing.Size(75, 23);
             this.btnProcess.TabIndex = 7;
@@ -125,7 +129,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnExit;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(545, 450);
             this.Controls.Add(this.btnProcess);
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.btnRenew);

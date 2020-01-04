@@ -110,6 +110,17 @@ namespace cp365
                 SetValue("PTK", "Database", value);
             }
         }
+        public static string ELODir
+        {
+            get
+            {
+                return GetValue("PTK", "ELO Directory", "");
+            }
+            set
+            {
+                SetValue("PTK", "ELO Directory", value);
+            }
+        }
         //public static string PTKiniFile
         //{
         //    get

@@ -66,14 +66,14 @@ namespace cp365
 
         public static string DateToSQL(DateTime d)
         {
-            return d.ToString("MM/dd/yyyy");
+            return d.ToString("MM/dd/yyyy HH:mm:ss");
         }
         public static DateTime DateFromSQL(string s)
         {
             if (!String.IsNullOrEmpty(s))
             {
                 //return DateTime.ParseExact(s, "s", System.Globalization.CultureInfo.InvariantCulture);
-                DateTime d = DateTime.ParseExact(s, "dd.MM.yyyy h:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                DateTime d = DateTime.ParseExact(s, "dd.MM.yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
                 return d;
             }
             else

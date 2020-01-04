@@ -70,6 +70,8 @@
             this.family = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.tel = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.eloDir = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -386,7 +388,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(23, 296);
+            this.label16.Location = new System.Drawing.Point(23, 305);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(132, 13);
             this.label16.TabIndex = 36;
@@ -395,7 +397,7 @@
             // dolgn
             // 
             this.dolgn.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.dolgn.Location = new System.Drawing.Point(162, 292);
+            this.dolgn.Location = new System.Drawing.Point(162, 301);
             this.dolgn.Name = "dolgn";
             this.dolgn.Size = new System.Drawing.Size(145, 20);
             this.dolgn.TabIndex = 37;
@@ -403,7 +405,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(333, 296);
+            this.label17.Location = new System.Drawing.Point(333, 305);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(56, 13);
             this.label17.TabIndex = 38;
@@ -412,7 +414,7 @@
             // family
             // 
             this.family.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.family.Location = new System.Drawing.Point(407, 292);
+            this.family.Location = new System.Drawing.Point(407, 301);
             this.family.Name = "family";
             this.family.Size = new System.Drawing.Size(149, 20);
             this.family.TabIndex = 39;
@@ -420,7 +422,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(574, 296);
+            this.label18.Location = new System.Drawing.Point(574, 305);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(52, 13);
             this.label18.TabIndex = 40;
@@ -428,10 +430,26 @@
             // 
             // tel
             // 
-            this.tel.Location = new System.Drawing.Point(632, 292);
+            this.tel.Location = new System.Drawing.Point(632, 301);
             this.tel.Name = "tel";
             this.tel.Size = new System.Drawing.Size(123, 20);
             this.tel.TabIndex = 41;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(31, 279);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(120, 13);
+            this.label19.TabIndex = 42;
+            this.label19.Text = "Каталог посылок ПТК";
+            // 
+            // eloDir
+            // 
+            this.eloDir.Location = new System.Drawing.Point(156, 274);
+            this.eloDir.Name = "eloDir";
+            this.eloDir.Size = new System.Drawing.Size(424, 20);
+            this.eloDir.TabIndex = 43;
             // 
             // FormConfig
             // 
@@ -439,6 +457,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.eloDir);
+            this.Controls.Add(this.label19);
             this.Controls.Add(this.tel);
             this.Controls.Add(this.label18);
             this.Controls.Add(this.family);
@@ -534,5 +554,7 @@
         private System.Windows.Forms.TextBox family;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox tel;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.TextBox eloDir;
     }
 }

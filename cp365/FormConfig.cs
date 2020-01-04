@@ -39,25 +39,26 @@ namespace cp365
             this.dolgn.Text = Config.DolOtpr;
             this.family.Text = Config.FamOtpr;
             this.tel.Text = Config.TelOtpr;
+            this.eloDir.Text = Config.ELODir;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
             string warnings = "";
             if (CheckDirectory(this.workdir.Text.Trim()))
-                Config.WorkDir = this.workdir.Text.Trim();
+                Config.WorkDir = StripEndSlash(this.workdir.Text);
             else return;
             if (CheckDirectory(this.tempdir.Text.Trim()))
-                Config.TempDir = this.tempdir.Text.Trim();
+                Config.TempDir = StripEndSlash(this.tempdir.Text);
             else return;
             if (CheckDirectory(this.indir.Text.Trim()))
-                Config.InDir = this.indir.Text.Trim();
+                Config.InDir = StripEndSlash(this.indir.Text);
             else return;
             if (CheckDirectory(this.outdir.Text.Trim()))
                 Config.OutDir = this.outdir.Text.Trim();
             else return;
             if (CheckDirectory(this.afndir.Text.Trim()))
-                Config.AFNDir = this.afndir.Text.Trim();
+                Config.AFNDir = StripEndSlash(this.afndir.Text);
             else return;
             Config.INVDir = this.invdir.Text; // может быть пустой - тогда не копировать
             Config.XSDDir = this.xsddir.Text; // может быть пустой - тогда не проверять
@@ -149,6 +150,12 @@ namespace cp365
             Config.TelOtpr = this.tel.Text;
             Config.DolOtpr = this.dolgn.Text;
             Config.FamOtpr = this.family.Text;
+            if (!Directory.Exists(this.eloDir.Text))
+            {
+                MessageBox.Show("Неверный каталог посылок ПТК ПСД");
+                return;
+            }
+            Config.ELODir = this.eloDir.Text.Trim();
             if (warnings.Length > 2)
                 MessageBox.Show(warnings, "Ошибки кофигурации", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             this.Close();
@@ -178,6 +185,14 @@ namespace cp365
             {
                 return true;
             }
+        }
+
+        private string StripEndSlash(string s)
+        {
+            string result = s.Trim();
+            if (result.EndsWith("\\"))
+                return result.Substring(0, result.Length - 1);
+            return result;
         }
     }
 }
