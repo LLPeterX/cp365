@@ -146,10 +146,11 @@ namespace cp365
                             if(mz!=null)
                             {
                                 string err = null;
-                                if (mz.fileName == null)
-                                    err = "Пустой";
-                                else if (mz.IsAFN())
+                                if (!mz.IsAFN())
+                                {
                                     err = "Без AFN";
+                                    mz.valid = false;
+                                }
                                 mz.mzFileDate = (DateTime)reader["dt"];
                                 mz.mzErr = err;
                                 result.Add(mz);

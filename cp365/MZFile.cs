@@ -16,6 +16,7 @@ namespace cp365
         public string fileName; // имя файла внутри MZ
         public DateTime mzFileDate { get; set; } // дата создания mz
         public string mzErr {get; set;}
+        public bool valid;
         
 
         public string ArjName { 
@@ -34,6 +35,7 @@ namespace cp365
             if(!FileExists())
             {
                 this.mzErr = "Файл не найден";
+                this.valid = false;
             }
         }
 
@@ -62,9 +64,10 @@ namespace cp365
             {
                 this.fileName =  null;
                 this.mzErr = "Ошибка!";
+                this.valid = false;
             }
         }
-        public bool ExctractFile(string directory)
+        public bool ExtractFile(string directory)
         {
             bool result = false;
             try
@@ -87,13 +90,24 @@ namespace cp365
 
         public bool FileExists()
         {
-            return File.Exists(mzFullPath);
+            if (File.Exists(mzFullPath))
+            {
+                this.valid = true;
+                return true;
+            }
+            else
+            {
+                this.valid = false;
+                return false;
+            }
         }
 
         public bool IsAFN()
         {
+            if (String.IsNullOrEmpty(fileName)) return false;
             return this.fileName.ToUpper().StartsWith("AFN")
                 && this.fileName.ToUpper().EndsWith("ARJ");
         }
+
     }
 }

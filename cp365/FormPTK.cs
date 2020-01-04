@@ -53,7 +53,7 @@ namespace cp365
                 {
                     MZFile mz = row.DataBoundItem as MZFile;
                     // распаковываем mz в AFN_IN
-                    if(!mz.ExctractFile(afnDirectory))
+                    if(!mz.ExtractFile(afnDirectory))
                     {
                         errorMessage += " Ошибка распаковки " + mz.mzName;
                     } else
