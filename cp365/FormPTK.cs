@@ -96,6 +96,7 @@ namespace cp365
         private void dataGrid_SelectionChanged(object sender, EventArgs e)
         {
             this.btnProcess.Enabled = (this.dataGrid.SelectedRows.Count > 0);
+            lbCountSelected.Text = this.dataGrid.SelectedRows.Count.ToString();
         }
     }
 }

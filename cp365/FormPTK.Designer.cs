@@ -36,6 +36,7 @@
             this.btnRenew = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
             this.btnProcess = new System.Windows.Forms.Button();
+            this.lbCountSelected = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -45,10 +46,10 @@
             this.dataGrid.AllowUserToDeleteRows = false;
             this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGrid.ColumnHeadersVisible = false;
-            this.dataGrid.Location = new System.Drawing.Point(13, 13);
+            this.dataGrid.Location = new System.Drawing.Point(13, 35);
             this.dataGrid.Name = "dataGrid";
             this.dataGrid.ReadOnly = true;
-            this.dataGrid.Size = new System.Drawing.Size(518, 336);
+            this.dataGrid.Size = new System.Drawing.Size(604, 314);
             this.dataGrid.TabIndex = 0;
             this.dataGrid.SelectionChanged += new System.EventHandler(this.dataGrid_SelectionChanged);
             // 
@@ -124,12 +125,22 @@
             this.btnProcess.UseVisualStyleBackColor = true;
             this.btnProcess.Click += new System.EventHandler(this.btnProcess_Click);
             // 
+            // lbCountSelected
+            // 
+            this.lbCountSelected.AutoSize = true;
+            this.lbCountSelected.Location = new System.Drawing.Point(13, 9);
+            this.lbCountSelected.Name = "lbCountSelected";
+            this.lbCountSelected.Size = new System.Drawing.Size(13, 13);
+            this.lbCountSelected.TabIndex = 8;
+            this.lbCountSelected.Text = "0";
+            // 
             // FormPTK
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnExit;
-            this.ClientSize = new System.Drawing.Size(545, 450);
+            this.ClientSize = new System.Drawing.Size(629, 450);
+            this.Controls.Add(this.lbCountSelected);
             this.Controls.Add(this.btnProcess);
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.btnRenew);
@@ -157,5 +168,6 @@
         private System.Windows.Forms.Button btnRenew;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.Button btnProcess;
+        private System.Windows.Forms.Label lbCountSelected;
     }
 }

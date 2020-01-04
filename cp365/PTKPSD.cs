@@ -143,9 +143,15 @@ namespace cp365
                             string mzfile = reader["filename"].ToString();
                             string fullPath = eloDir + "\\"+mzfile.Substring(0, 12); // с расширением, но отбрасываем лишнее расширение
                             MZFile mz = new MZFile(fullPath);
-                            if(mz!=null && mz.fileName!=null && mz.fileName.ToUpper().StartsWith("AFN"))
+                            if(mz!=null)
                             {
+                                string err = null;
+                                if (mz.fileName == null)
+                                    err = "Пустой";
+                                else if (mz.IsAFN())
+                                    err = "Без AFN";
                                 mz.mzFileDate = (DateTime)reader["dt"];
+                                mz.mzErr = err;
                                 result.Add(mz);
                             } else
                             {

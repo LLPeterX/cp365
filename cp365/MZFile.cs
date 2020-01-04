@@ -15,7 +15,7 @@ namespace cp365
         private string mzFullPath; // полное имя файла
         public string fileName; // имя файла внутри MZ
         public DateTime mzFileDate { get; set; } // дата создания mz
-        public string mzErrState {get; set;}
+        public string mzErr {get; set;}
         
 
         public string ArjName { 
@@ -31,6 +31,10 @@ namespace cp365
             this.mzFullPath = mz_path;
             this.mzName = Path.GetFileName(this.mzFullPath).ToLower();
             getFileInCAB(); // получить значение fileName в CAB-архиве
+            if(!FileExists())
+            {
+                this.mzErr = "Файл не найден";
+            }
         }
 
         // ---- getters ---
@@ -57,10 +61,9 @@ namespace cp365
             catch
             {
                 this.fileName =  null;
-                this.mzErrState = "Ошибка!";
+                this.mzErr = "Ошибка!";
             }
         }
-
         public bool ExctractFile(string directory)
         {
             bool result = false;
@@ -82,9 +85,15 @@ namespace cp365
             return result;
         }
 
-        public bool FileExists(string directory)
+        public bool FileExists()
         {
             return File.Exists(mzFullPath);
+        }
+
+        public bool IsAFN()
+        {
+            return this.fileName.ToUpper().StartsWith("AFN")
+                && this.fileName.ToUpper().EndsWith("ARJ");
         }
     }
 }
