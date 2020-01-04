@@ -40,7 +40,32 @@ namespace cp365
         private void btnProcess_Click(object sender, EventArgs e)
         {
             // обработка помеченных файлов
-            this.Close();
+
+            if (this.dataGrid.SelectedRows.Count > 0)
+            {
+                string afnDirectory = Config.AFNDir;
+                string errorMessage = "";
+                string result = "";
+                List<string> afnNames = new List<string>();
+                foreach (DataGridViewRow row in this.dataGrid.SelectedRows)
+                {
+                    MZFile mz = row.DataBoundItem as MZFile;
+                    // распаковываем mz в AFN_IN
+                    if(!mz.ExctractFile(afnDirectory))
+                    {
+                        errorMessage += " Ошибка распаковки " + mz.mzName;
+                    } else
+                    {
+                        afnNames.Add(mz.ArjName);
+                        result += mz.ArjName + "\n";
+                    }
+                }
+                if (errorMessage.Length > 1)
+                    MessageBox.Show(errorMessage, "Ошибки");
+                MessageBox.Show("Следующие файлы помещены в каталог\n" + afnDirectory + ":\n\n" + result, "Распаковка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // обработка файлов AFN:
+                this.Close();
+            }
         }
 
         private void FormPTK_Load(object sender, EventArgs e)
@@ -56,6 +81,7 @@ namespace cp365
             string errorMessage = null;
             List<MZFile> data = ptk.GetMzFiles(strDateFrom, strDateTo, out errorMessage);
             this.dataGrid.DataSource = data;
+            this.dataGrid.AutoResizeColumns();
             this.dataGrid.Refresh();
             if(errorMessage.Length>10)
             {

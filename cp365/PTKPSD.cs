@@ -141,7 +141,13 @@ namespace cp365
                             {
                                 //string strTime = reader.GetString(1);
                                 string strTime = reader["dt"].ToString();
-                                mz.mzFileDate = Util.DateFromSQL(strTime);
+                                try
+                                {
+                                    mz.mzFileDate = Util.DateFromSQL(strTime);
+                                } catch
+                                {
+                                    mz.mzFileDate = DateTime.Now; // ???
+                                }
                                 result.Add(mz);
                             } else
                             {

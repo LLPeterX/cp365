@@ -18,10 +18,12 @@ namespace cp365
         public string mzErrState {get; set;}
         
 
-        public string ArjName { get
+        public string ArjName { 
+            get
             {
                 return this.fileName;
-            } }
+            } 
+        }
 
         // конструктор
         public MZFile(string mz_path)
@@ -57,6 +59,27 @@ namespace cp365
                 this.fileName =  null;
                 this.mzErrState = "Ошибка!";
             }
+        }
+
+        public bool ExctractFile(string directory)
+        {
+            bool result = false;
+            try
+            {
+
+                CabInfo cab = new CabInfo(this.mzFullPath);
+                cab.Unpack(directory);
+                if (File.Exists(directory + "\\" + ArjName))
+                {
+                    result = true;
+                }
+                else result = false;
+            }
+            catch
+            {
+                result = false;
+            }
+            return result;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace cp365
         // 5. Снять ЭЦП с *.xml
         // 6. Скопировать *.xml в TO_INV и в IN\YYYYMMDD
         // 7. Если включено создавать PB1, создать файлы PB1 в каталоге WORK
-        public bool DecryptAFN(string afnFileName)
+        public bool DecryptAFN(string afnFileName) // afnFileName - полный путь к AFN
         {
             string tempDir = Config.TempDir; // отдельная переменная, чтобы лишний раз не перечитывать файл .ini
             string AFNname;
