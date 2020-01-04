@@ -24,6 +24,8 @@ namespace cp365
                 MessageBox.Show("Не удалось получить доступ к ПТК ПСД\n" + ptk.errorMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            this.dateFrom.Value = Util.DateFromSQL("20.12.2019 00:00:00");
+            this.dateTo.Value = Util.DateFromSQL("20.12.2019 23:59:00");
         }
 
         
@@ -76,13 +78,15 @@ namespace cp365
 
         private void FillDataGrid()
         {
-            string strDateFrom = "12/20/2019 00:00:00";
-            string strDateTo = "12/20/2019 23:59:00";
+            //string strDateFrom = "12/20/2019 00:00:00";
+            //string strDateTo = "12/20/2019 23:59:00";
+
             string errorMessage = null;
-            List<MZFile> data = ptk.GetMzFiles(strDateFrom, strDateTo, out errorMessage);
+            //List<MZFile> data = ptk.GetMzFiles(strDateFrom, strDateTo, out errorMessage);
+            List<MZFile> data = ptk.GetMzFiles(dateFrom.Value, dateTo.Value, out errorMessage);
             this.dataGrid.DataSource = data;
             this.dataGrid.AutoResizeColumns();
-            this.dataGrid.Refresh();
+            //this.dataGrid.Refresh();
             if(errorMessage.Length>10)
             {
                 MessageBox.Show(errorMessage, "Ошибка",MessageBoxButtons.OK, MessageBoxIcon.Error);

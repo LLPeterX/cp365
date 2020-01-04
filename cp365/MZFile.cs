@@ -81,5 +81,10 @@ namespace cp365
             }
             return result;
         }
+
+        public bool FileExists(string directory)
+        {
+            return File.Exists(mzFullPath);
+        }
     }
 }

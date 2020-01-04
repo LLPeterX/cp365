@@ -106,7 +106,8 @@ namespace cp365
         }
 
         // параметры - строковые в виде MM/dd/yyyy
-        public List<MZFile> GetMzFiles(string dateFrom, string dateTo, out string errorMessage)
+        //public List<MZFile> GetMzFiles(string dateFrom, string dateTo, out string errorMessage)
+         public List<MZFile> GetMzFiles(DateTime dateFrom, DateTime dateTo, out string errorMessage)
         {
 
             string sqlTemplate =
@@ -117,11 +118,12 @@ namespace cp365
           "INNER JOIN elo_spr_err ON elo_arh_post.error_ = elo_spr_err.ErrCod) "+
           "INNER JOIN elo_spr_state ON elo_arh_post.state_ = elo_spr_state.kot_st) "+
         "WHERE(elo_arh_post.posttype = 'mz') AND (elo_arh_post.filetype = 'ИЭС2') "+
-              " AND (elo_arh_post.dt BETWEEN #@1# AND #@2#) "+
+              //              " AND (elo_arh_post.dt BETWEEN #@1# AND #@2#) "+
+              " AND (elo_arh_post.dt BETWEEN @start AND @end) " +
               "ORDER BY elo_arh_post.dt";
             // 0:filetype, 1:dt, 2:filename, 3:state, 4:stateText, 5: err, 6:err_text
             // даты в виде "#mm/dd/YYYY#"
-            string strSQL = sqlTemplate.Replace("@1", dateFrom).Replace("@2", dateTo);
+            //string strSQL = sqlTemplate.Replace("@1", Util.DateToSQL(dateFrom)).Replace("@2", Util.DateToSQL(dateTo));
             List<MZFile> result = new List<MZFile>();
             errorMessage =null;
             // надо вывести: mzName, fileName, дата/время
@@ -130,7 +132,10 @@ namespace cp365
                 using (OleDbConnection connection = new OleDbConnection(connectionString))
                 {
                     connection.Open();
-                    OleDbCommand cmd = new OleDbCommand(strSQL, connection);
+                    //OleDbCommand cmd = new OleDbCommand(strSQL, connection);
+                    OleDbCommand cmd = new OleDbCommand(sqlTemplate, connection);
+                    cmd.Parameters.AddWithValue("@start", dateFrom);
+                    cmd.Parameters.AddWithValue("@end", dateTo);
                     using (OleDbDataReader reader = cmd.ExecuteReader())
                     {
                         while(reader.Read())
@@ -140,14 +145,7 @@ namespace cp365
                             MZFile mz = new MZFile(fullPath);
                             if(mz!=null && mz.fileName!=null && mz.fileName.ToUpper().StartsWith("AFN"))
                             {
-                                string strTime = reader["dt"].ToString();
-                                try
-                                {
-                                    mz.mzFileDate = Util.DateFromSQL(strTime);
-                                } catch
-                                {
-                                    mz.mzFileDate = DateTime.Now; // ???
-                                }
+                                mz.mzFileDate = (DateTime)reader["dt"];
                                 result.Add(mz);
                             } else
                             {

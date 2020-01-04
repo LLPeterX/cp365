@@ -66,7 +66,10 @@ namespace cp365
 
         public static string DateToSQL(DateTime d)
         {
-            return d.ToString("MM/dd/yyyy HH:mm:ss");
+            // засада: MM/dd/yyyy на самом деле возвращавется как MM.dd.yyyy
+            string result = d.ToString("MM/dd/yyyy HH:mm:ss");
+            //string result = d.ToString(System.Globalization.CultureInfo.CreateSpecificCulture("en-US"));
+            return result;
         }
         public static DateTime DateFromSQL(string s)
         {
