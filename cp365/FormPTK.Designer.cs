@@ -44,11 +44,13 @@
             this.dataGrid.AllowUserToAddRows = false;
             this.dataGrid.AllowUserToDeleteRows = false;
             this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGrid.ColumnHeadersVisible = false;
             this.dataGrid.Location = new System.Drawing.Point(13, 13);
             this.dataGrid.Name = "dataGrid";
             this.dataGrid.ReadOnly = true;
             this.dataGrid.Size = new System.Drawing.Size(775, 336);
             this.dataGrid.TabIndex = 0;
+            this.dataGrid.SelectionChanged += new System.EventHandler(this.dataGrid_SelectionChanged);
             // 
             // label1
             // 
@@ -109,6 +111,7 @@
             // 
             // btnProcess
             // 
+            this.btnProcess.Enabled = false;
             this.btnProcess.Location = new System.Drawing.Point(363, 415);
             this.btnProcess.Name = "btnProcess";
             this.btnProcess.Size = new System.Drawing.Size(75, 23);

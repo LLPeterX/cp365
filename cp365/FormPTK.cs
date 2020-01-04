@@ -88,5 +88,10 @@ namespace cp365
                 MessageBox.Show(errorMessage, "Ошибка",MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void dataGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            this.btnProcess.Enabled = (this.dataGrid.SelectedRows.Count > 0);
+        }
     }
 }

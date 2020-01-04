@@ -137,9 +137,8 @@ namespace cp365
                             string mzfile = reader["filename"].ToString();
                             string fullPath = eloDir + mzfile.Substring(0, 12); // с расширением, но отбрасываем лишнее расширение
                             MZFile mz = new MZFile(fullPath);
-                            if(mz!=null && mz.fileName!=null)
+                            if(mz!=null && mz.fileName!=null && mz.fileName.ToUpper().StartsWith("AFN"))
                             {
-                                //string strTime = reader.GetString(1);
                                 string strTime = reader["dt"].ToString();
                                 try
                                 {
