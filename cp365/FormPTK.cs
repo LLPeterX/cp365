@@ -97,6 +97,10 @@ namespace cp365
             string errorMessage = null;
             List<MZFile> data = ptk.GetMzFiles(dateFrom.Value, dateTo.Value, out errorMessage);
             this.dataGrid.DataSource = data;
+            this.dataGrid.Columns["mzName"].HeaderText = "Файл ПТК";
+            this.dataGrid.Columns["mzFileDate"].HeaderText = "Дата";
+            this.dataGrid.Columns["mzErr"].HeaderText = "Ошибка";
+            this.dataGrid.Columns["ArjName"].HeaderText = "Имя файла ФНС";
             this.dataGrid.AutoResizeColumns();
             if(!String.IsNullOrEmpty(errorMessage))
             {

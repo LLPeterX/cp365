@@ -82,14 +82,13 @@ namespace cp365
              MessageBox.Show(strStat, shortAFNname, MessageBoxButtons.OK, MessageBoxIcon.Information);
             return true;
         }
-
+        // Сборка статистики: сколько файлов каких тиапов в AFN
         public string  GetStatistic(string[] fileNames)
         {
             Dictionary<String,Int32> stat = new Dictionary<String, Int32>();
             foreach(string fname in fileNames)
             {
-                string fileName = Path.GetFileName(fname).ToUpper();
-                string id = fileName.Substring(0, 3);
+                string id = this.shortAFNname.Substring(0, 3);
                 if (stat.ContainsKey(id))
                     stat[id]++;
                 else
