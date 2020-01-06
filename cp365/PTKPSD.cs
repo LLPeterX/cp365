@@ -117,7 +117,7 @@ namespace cp365
               "ORDER BY elo_arh_post.dt";
             // 0:filetype, 1:dt, 2:filename, 3:state, 4:stateText, 5: err, 6:err_text
             // даты в виде "#mm/dd/YYYY#"
-            //string strSQL = sqlTemplate.Replace("@1", Util.DateToSQL(dateFrom)).Replace("@2", Util.DateToSQL(dateTo));
+            string strSQL = sqlTemplate.Replace("@start", "#"+Util.DateToSQL(dateFrom)+"#").Replace("@end", "#"+Util.DateToSQL(dateTo)+"#");
             List<MZFile> result = new List<MZFile>();
             errorMessage =null;
             // надо вывести: mzName, fileName, дата/время
@@ -126,10 +126,11 @@ namespace cp365
                 using (OleDbConnection connection = new OleDbConnection(connectionString))
                 {
                     connection.Open();
-                    //OleDbCommand cmd = new OleDbCommand(strSQL, connection);
-                    OleDbCommand cmd = new OleDbCommand(sqlTemplate, connection);
-                    cmd.Parameters.AddWithValue("@start", dateFrom);
-                    cmd.Parameters.AddWithValue("@end", dateTo);
+                    // Я не победил DateTime в параметрах, поэтому через строки
+                    OleDbCommand cmd = new OleDbCommand(strSQL, connection);
+                    //OleDbCommand cmd = new OleDbCommand(sqlTemplate, connection);
+                    //cmd.Parameters.AddWithValue("@start", dateFrom);
+                    //cmd.Parameters.AddWithValue("@end", dateTo);
                     using (OleDbDataReader reader = cmd.ExecuteReader())
                     {
                         while(reader.Read())

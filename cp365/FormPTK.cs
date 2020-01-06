@@ -22,10 +22,12 @@ namespace cp365
                 MessageBox.Show("Не удалось получить доступ к ПТК ПСД\n" + ptk.errorMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            this.dateFrom.Value = Util.DateFromSQL("20.12.2019 00:00:00");
-            this.dateTo.Value = Util.DateFromSQL("20.12.2019 23:59:00");
-            //TimeSpan ts1 = new TimeSpan(23, 59, 59);
-            //this.dateTo.Value = DateTime.Now + ts1;
+            //this.dateFrom.Value = Util.DateFromSQL("20.12.2019 00:00:00");
+            //this.dateTo.Value = Util.DateFromSQL("20.12.2019 23:59:00");
+            //this.dateFrom.Value = DateTime.Now;
+            //this.dateTo.Value = DateTime.Now;
+            this.dateFrom.Value = CreateDate(DateTime.Now, true);
+            this.dateTo.Value = CreateDate(DateTime.Now, false);
         }
 
         
@@ -83,11 +85,8 @@ namespace cp365
 
         private void FillDataGrid()
         {
-            //string strDateFrom = "12/20/2019 00:00:00";
-            //string strDateTo = "12/20/2019 23:59:00";
 
             string errorMessage = null;
-            //List<MZFile> data = ptk.GetMzFiles(strDateFrom, strDateTo, out errorMessage);
             List<MZFile> data = ptk.GetMzFiles(dateFrom.Value, dateTo.Value, out errorMessage);
             this.dataGrid.DataSource = data;
             this.dataGrid.AutoResizeColumns();
@@ -113,6 +112,31 @@ namespace cp365
         private void dateTo_ValueChanged(object sender, EventArgs e)
         {
             this.dateFrom.Value.Add(new TimeSpan(23, 59, 0));
+        }
+
+        private DateTime CreateDate(DateTime dt, bool startDate)
+        {
+            if(startDate)
+            {
+                return new DateTime(dt.Year,
+        dt.Month,
+        dt.Day,
+        0,
+        0,
+        0,
+        0,
+        dt.Kind);
+            } else
+            {
+                return new DateTime(dt.Year,
+        dt.Month,
+        dt.Day,
+        23,
+        59,
+        0,
+        0,
+        dt.Kind);
+            }
         }
     }
 }
