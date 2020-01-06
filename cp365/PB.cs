@@ -27,7 +27,7 @@ namespace cp365
             this.pbErrCode = errorCode;
             this.pbMessage = errorMessage;
             this.filNumber = fil;
-            if(pbType == PBTYPE.GOOD)
+            if(pbType == PBTYPE.SUCCESS)
               this.pbFileName = "PB1" + "_" + this.sourceName+".xml";
             else
                 this.pbFileName = "PB2" + "_" + this.sourceName+"_"+this.filNumber+".xml";
@@ -57,7 +57,7 @@ namespace cp365
 
             }
             */
-            if (type == PBTYPE.GOOD)
+            if (type == PBTYPE.SUCCESS)
                 this.xmlText = GetPBContent(srcFileName);
             else
                 this.xmlText = GetPBContent(srcFileName, errorCode, errorMessage);
@@ -106,7 +106,7 @@ namespace cp365
 
     public enum PBTYPE
     {
-        GOOD = 1,
+        SUCCESS = 1,
         ERROR = 2
     }
 }

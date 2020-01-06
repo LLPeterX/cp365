@@ -22,18 +22,14 @@ namespace cp365
                 MessageBox.Show("Не удалось получить доступ к ПТК ПСД\n" + ptk.errorMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            //this.dateFrom.Value = Util.DateFromSQL("20.12.2019 00:00:00");
-            //this.dateTo.Value = Util.DateFromSQL("20.12.2019 23:59:00");
-            //this.dateFrom.Value = DateTime.Now;
-            //this.dateTo.Value = DateTime.Now;
-            this.dateFrom.Value = CreateDate(DateTime.Now, true);
+            // ниже в датах заменяем время на 00:00:00 или 23:59:00
+            this.dateFrom.Value = CreateDate(DateTime.Now, true); 
             this.dateTo.Value = CreateDate(DateTime.Now, false);
         }
 
         
         private void btnRenew_Click(object sender, EventArgs e)
         {
-            //this.dataGrid.Refresh();
             FillDataGrid();
         }
 
@@ -71,7 +67,7 @@ namespace cp365
                 }
                 if (errorMessage.Length > 1)
                     MessageBox.Show(errorMessage, "Ошибки");
-                if (MessageBox.Show("Следующие файлы помещены в каталог\n" + afnDirectory + ":\n\n" + result + "\nОбработать?",
+                if (afnNames.Count>0 && MessageBox.Show("Следующие файлы помещены в каталог\n" + afnDirectory + ":\n\n" + result + "\nОбработать?",
                     "Распаковка", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     foreach(string afnFile in afnNames)
@@ -80,8 +76,9 @@ namespace cp365
                         AFNProcessor prc = new AFNProcessor(fullPath);
                         prc.Decrypt();
                     }
+                    MessageBox.Show("Готово");
                 }
-                this.Close();
+                this.Close(); // закрываем форму
             }
         }
 
