@@ -100,12 +100,6 @@ namespace cp365
             return false;
         }
 
-        public string GetPackagesDirectory()
-        {
-            return this.eloDir;
-        }
-
-        // параметры - строковые в виде MM/dd/yyyy
         //public List<MZFile> GetMzFiles(string dateFrom, string dateTo, out string errorMessage)
          public List<MZFile> GetMzFiles(DateTime dateFrom, DateTime dateTo, out string errorMessage)
         {

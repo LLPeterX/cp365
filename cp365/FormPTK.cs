@@ -10,8 +10,6 @@ using System.Windows.Forms;
 
 namespace cp365
 {
-    // см. https://www.bestprog.net/ru/2015/12/22/002-%D0%B2%D1%8B%D0%B2%D0%BE%D0%B4-%D1%82%D0%B0%D0%B1%D0%BB%D0%B8%D1%86%D1%8B-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-microsoft-access-%D0%B2-%D0%BA%D0%BE%D0%BC%D0%BF%D0%BE/
-    // (работа с адаптерами)
     public partial class FormPTK : Form
     {
         PTKPSD ptk;
@@ -26,12 +24,15 @@ namespace cp365
             }
             this.dateFrom.Value = Util.DateFromSQL("20.12.2019 00:00:00");
             this.dateTo.Value = Util.DateFromSQL("20.12.2019 23:59:00");
+            //TimeSpan ts1 = new TimeSpan(23, 59, 59);
+            //this.dateTo.Value = DateTime.Now + ts1;
         }
 
         
         private void btnRenew_Click(object sender, EventArgs e)
         {
-            this.dataGrid.Refresh();
+            //this.dataGrid.Refresh();
+            FillDataGrid();
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -52,14 +53,18 @@ namespace cp365
                 foreach (DataGridViewRow row in this.dataGrid.SelectedRows)
                 {
                     MZFile mz = row.DataBoundItem as MZFile;
-                    // распаковываем mz в AFN_IN
-                    if(!mz.ExtractFile(afnDirectory))
+                    if (mz.IsAFN())
                     {
-                        errorMessage += " Ошибка распаковки " + mz.mzName;
-                    } else
-                    {
-                        afnNames.Add(mz.ArjName);
-                        result += mz.ArjName + "\n";
+                        // распаковываем mz в AFN_IN
+                        if (!mz.ExtractFile(afnDirectory))
+                        {
+                            errorMessage += " Ошибка распаковки " + mz.mzName;
+                        }
+                        else
+                        {
+                            afnNames.Add(mz.ArjName);
+                            result += mz.ArjName + "\n";
+                        }
                     }
                 }
                 if (errorMessage.Length > 1)
@@ -87,9 +92,9 @@ namespace cp365
             this.dataGrid.DataSource = data;
             this.dataGrid.AutoResizeColumns();
             //this.dataGrid.Refresh();
-            if(errorMessage.Length>10)
+            if(!String.IsNullOrEmpty(errorMessage))
             {
-                MessageBox.Show(errorMessage, "Ошибка",MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(errorMessage, "Ошибка заполнения таблицы",MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -97,6 +102,17 @@ namespace cp365
         {
             this.btnProcess.Enabled = (this.dataGrid.SelectedRows.Count > 0);
             lbCountSelected.Text = this.dataGrid.SelectedRows.Count.ToString();
+        }
+
+        private void dateFrom_ValueChanged(object sender, EventArgs e)
+        {
+            // изменить время на 00:00:00
+            this.dateFrom.Value.Add(new TimeSpan(0, 0, 0));
+        }
+
+        private void dateTo_ValueChanged(object sender, EventArgs e)
+        {
+            this.dateFrom.Value.Add(new TimeSpan(23, 59, 0));
         }
     }
 }

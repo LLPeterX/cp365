@@ -45,7 +45,6 @@
             this.dataGrid.AllowUserToAddRows = false;
             this.dataGrid.AllowUserToDeleteRows = false;
             this.dataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGrid.ColumnHeadersVisible = false;
             this.dataGrid.Location = new System.Drawing.Point(13, 35);
             this.dataGrid.Name = "dataGrid";
             this.dataGrid.ReadOnly = true;
@@ -81,6 +80,7 @@
             this.dateFrom.Name = "dateFrom";
             this.dateFrom.Size = new System.Drawing.Size(127, 20);
             this.dateFrom.TabIndex = 3;
+            this.dateFrom.ValueChanged += new System.EventHandler(this.dateFrom_ValueChanged);
             // 
             // dateTo
             // 
@@ -92,6 +92,7 @@
             this.dateTo.Name = "dateTo";
             this.dateTo.Size = new System.Drawing.Size(127, 20);
             this.dateTo.TabIndex = 4;
+            this.dateTo.ValueChanged += new System.EventHandler(this.dateTo_ValueChanged);
             // 
             // btnRenew
             // 
