@@ -243,22 +243,25 @@ namespace cp365
         {
             get
             {
-                return Convert.ToInt32(GetValue("NoModify", "Serial Number", "1"));
+                return Convert.ToInt32(GetValue("NoModify", "Serial Number", "0"));
             }
             set
             {
                 SetValue("NoModify", "Serial Number", value.ToString());
             }
         }
-        public static DateTime SerialDate
+        public static string SerialDate
         {
             get
             {
-                return Util.DateFromYMD(GetValue("NoModify", "Serial Date", ""));
+                //return Util.DateFromYMD(GetValue("NoModify", "Serial Date", ""));
+                string strToday = DateTime.Now.ToString("yyyyMMdd");
+                return GetValue("NoModify", "Serial Date", strToday);
             }
             set
             {
-                SetValue("NoModify", "Serial Date", Util.DateToYMD(value));
+                //SetValue("NoModify", "Serial Date", Util.DateToYMD(value));
+                SetValue("NoModify", "Serial Date", value);
             }
         }
 

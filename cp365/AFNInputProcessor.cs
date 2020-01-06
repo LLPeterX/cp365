@@ -9,14 +9,14 @@ using System.Diagnostics;
 
 namespace cp365
 {
-    public class AFNProcessor
+    public class AFNInputProcessor
     {
         private string AFNname; // полный путь к файлу AFN
         private string shortAFNname; // короткое имя AFN
         private string tempDir; // отдельная переменная, чтобы лишний раз не пересчитывать Config
 
         // конструктор
-        public AFNProcessor(string afn_name)
+        public AFNInputProcessor(string afn_name)
         {
             this.AFNname = afn_name;
             this.shortAFNname = Path.GetFileName(afn_name).ToUpper();

@@ -30,7 +30,7 @@ namespace cp365
             this.profile.Text = Config.Profile;
             this.fnskey.Text = Config.FNSKey;
             this.lastNum.Text = Config.SerialNum.ToString();
-            this.lastDate.Text = Util.DateToYMD(Config.SerialDate);
+            this.lastDate.Text = Config.SerialDate;
             this.virtualFDD.Checked = Config.UseVirtualFDD;
             this.usePTK.Checked = Config.UsePTK;
             this.checkXSD.Checked = Config.UseXSD;

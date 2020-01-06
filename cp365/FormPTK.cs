@@ -73,7 +73,7 @@ namespace cp365
                     foreach(string afnFile in afnNames)
                     {
                         string fullPath = afnDirectory+"\\"+afnFile;
-                        AFNProcessor prc = new AFNProcessor(fullPath);
+                        AFNInputProcessor prc = new AFNInputProcessor(fullPath);
                         prc.Decrypt();
                     }
                     MessageBox.Show("Готово");

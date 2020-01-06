@@ -46,7 +46,7 @@ namespace cp365
             if (dlg.ShowDialog() != DialogResult.OK)
                 return;
             // Может, писать в протокол?
-            AFNProcessor ap = new AFNProcessor(dlg.FileName);
+            AFNInputProcessor ap = new AFNInputProcessor(dlg.FileName);
             ap.Decrypt();
         }
 
@@ -59,6 +59,12 @@ namespace cp365
         {
             FormPTK ptkForm = new FormPTK();
             ptkForm.ShowDialog();
+        }
+
+        private void исходящиеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormSend fs = new FormSend();
+            fs.ShowDialog();
         }
     }
 }

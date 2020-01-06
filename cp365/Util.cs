@@ -82,5 +82,10 @@ namespace cp365
             else
                 return DateTime.Now;
         }
+
+        public static int GetCountOfFilesInDirectory(string directory)
+        {
+            return Directory.GetFiles(directory).Length;
+        }
     }
 }
