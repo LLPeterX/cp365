@@ -9,39 +9,20 @@ using System.Diagnostics;
 
 namespace cp365
 {
-    public partial class FormMain
+    public class AFNProcessor
     {
-        // параметром передается полный путь к файлу AFN
-        // 1. Выбрать файл AFN из каталога [Config.AFNDir]
-        // 2. [снять ЭЦП с ARJ] - не реализовано, т.к. и так расшифровыает хорошо.
-        // 3. Разархивировать ARJ в TEMP
-        // 4. Расшифровать *.vrb и переименовать в *.xml
-        // 5. Снять ЭЦП с *.xml
-        // 6. Скопировать *.xml в TO_INV и в IN\YYYYMMDD
-        // 7. Если включено создавать PB1, создать файлы PB1 в каталоге WORK
-        public bool DecryptAFN(string afnFileName) // afnFileName - полный путь к AFN
+        private string AFNname; // полный путь к файлу AFN
+        private string shortAFNname; // короткое имя AFN
+     // конструктор
+        public AFNProcessor(string afn_name)
+        {
+            this.AFNname = afn_name;
+            this.shortAFNname = Path.GetFileName(afn_name).ToUpper();
+        }
+        public bool Decrypt() // afnFileName - полный путь к AFN
         {
             string tempDir = Config.TempDir; // отдельная переменная, чтобы лишний раз не перечитывать файл .ini
-            string AFNname;
             // выбор файла AFNxxx.arj
-            if (afnFileName == null)
-            {
-                OpenFileDialog openAFN = new OpenFileDialog();
-                openAFN.InitialDirectory = Config.AFNDir;
-                openAFN.Filter = "ARJ files (*.arj)|*.arj";
-                openAFN.FilterIndex = 0;
-                openAFN.RestoreDirectory = true;
-                if (openAFN.ShowDialog() != DialogResult.OK)
-                    return false;
-                //            this.lbInfo.Text = "Обработка...";
-                //            this.lbInfo.Visible = true;
-                ShowProcess(true);
-
-                AFNname = Path.GetFullPath(openAFN.FileName);
-            } else
-            {
-                AFNname = afnFileName;
-            }
                 // надо ли снимать ЭЦП, если и так все прекрасно разархивируется?
                 // разархивируем AFN
                 Util.CleanDirectory(Config.TempDir);
@@ -98,11 +79,11 @@ namespace cp365
                     pb1.Save(workDir);
                 }
              }
-             MessageBox.Show(strStat, "Статистика", MessageBoxButtons.OK, MessageBoxIcon.Information);
+             MessageBox.Show(strStat, shortAFNname, MessageBoxButtons.OK, MessageBoxIcon.Information);
             return true;
         }
 
-        private string  GetStatistic(string[] fileNames)
+        public string  GetStatistic(string[] fileNames)
         {
             Dictionary<String,Int32> stat = new Dictionary<String, Int32>();
             foreach(string fname in fileNames)
@@ -125,21 +106,5 @@ namespace cp365
             }
             return sb.ToString();
         }
-
-        // показать результат выполнения операции
-        private void ShowProcess(bool active)
-        {
-            if(active)
-            {
-                this.lbInfo.Visible = true;
-                this.lbInfo.Text = "Обработка...";
-                this.lbInfo.Left = (this.Width - this.lbInfo.Width) / 2;
-            } else
-            {
-                this.lbInfo.Visible = false;
-            }
-            this.lbInfo.Refresh();
-        }
-
     }
 }

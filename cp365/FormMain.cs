@@ -36,9 +36,18 @@ namespace cp365
 
         private void processAFN(object sender, EventArgs e)
         {
-            DecryptAFN(null); // предполагается выбор файла вручную
-            ShowProcess(false);
 
+            //DecryptAFN(null); // предполагается выбор файла вручную
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = Config.AFNDir;
+            dlg.Filter = "ARJ files (*.arj)|*.arj";
+            dlg.FilterIndex = 0;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK)
+                return;
+            // Может, писать в протокол?
+            AFNProcessor ap = new AFNProcessor(dlg.FileName);
+            ap.Decrypt();
         }
 
         private void EnableOrDisableMenuItems()

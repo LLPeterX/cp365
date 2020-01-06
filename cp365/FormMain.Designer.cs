@@ -36,7 +36,6 @@
             this.исходящиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuConfig = new System.Windows.Forms.ToolStripMenuItem();
             this.menuExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.lbInfo = new System.Windows.Forms.Label();
             this.mainMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -104,24 +103,11 @@
             this.menuExit.Text = "Выход";
             this.menuExit.Click += new System.EventHandler(this.menuExit_Click);
             // 
-            // lbInfo
-            // 
-            this.lbInfo.AutoSize = true;
-            this.lbInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 40F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lbInfo.Location = new System.Drawing.Point(314, 154);
-            this.lbInfo.Name = "lbInfo";
-            this.lbInfo.Size = new System.Drawing.Size(173, 63);
-            this.lbInfo.TabIndex = 1;
-            this.lbInfo.Text = "label1";
-            this.lbInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lbInfo.Visible = false;
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.lbInfo);
             this.Controls.Add(this.mainMenu);
             this.MainMenuStrip = this.mainMenu;
             this.Name = "FormMain";
@@ -143,7 +129,6 @@
         private System.Windows.Forms.ToolStripMenuItem menuProcessAFN;
         private System.Windows.Forms.ToolStripMenuItem menuProcessPTK;
         private System.Windows.Forms.ToolStripMenuItem menuExitIn;
-        private System.Windows.Forms.Label lbInfo;
     }
 }
 

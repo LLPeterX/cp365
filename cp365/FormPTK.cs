@@ -71,8 +71,16 @@ namespace cp365
                 }
                 if (errorMessage.Length > 1)
                     MessageBox.Show(errorMessage, "Ошибки");
-                MessageBox.Show("Следующие файлы помещены в каталог\n" + afnDirectory + ":\n\n" + result, "Распаковка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                // обработка файлов AFN:
+                if (MessageBox.Show("Следующие файлы помещены в каталог\n" + afnDirectory + ":\n\n" + result + "\nОбработать?",
+                    "Распаковка", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    foreach(string afnFile in afnNames)
+                    {
+                        string fullPath = afnDirectory+"\\"+afnFile;
+                        AFNProcessor prc = new AFNProcessor(fullPath);
+                        prc.Decrypt();
+                    }
+                }
                 this.Close();
             }
         }
@@ -90,7 +98,6 @@ namespace cp365
             List<MZFile> data = ptk.GetMzFiles(dateFrom.Value, dateTo.Value, out errorMessage);
             this.dataGrid.DataSource = data;
             this.dataGrid.AutoResizeColumns();
-            //this.dataGrid.Refresh();
             if(!String.IsNullOrEmpty(errorMessage))
             {
                 MessageBox.Show(errorMessage, "Ошибка заполнения таблицы",MessageBoxButtons.OK, MessageBoxIcon.Error);
