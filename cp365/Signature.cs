@@ -135,6 +135,22 @@ namespace cp365
             }
             return (0);
         }
+        // модификация со ссылкой на ключ из конфига
+        static public int Encrypt(String file_name, out string result)
+        {
+            String encryptedName = file_name + ".vrb";
+            String args = "-encrypt -profile " + SIG_PROFILE + " -registry -in " + file_name +
+                " -out " + encryptedName + " -reckeyid " + Config.FNSKey;
+            gzip(file_name);
+            ExecuteSpki(args, out result);
+            if (!revertFile(file_name, encryptedName))
+            {
+                MessageBox.Show("Не удалось зашифровать файл " + file_name);
+                return 1;
+
+            }
+            return (0);
+        }
 
         // расшифровка файла .vrb в .xml (дальнейшее преобразование будет далее)
         // 1) расшифроываем в .gz

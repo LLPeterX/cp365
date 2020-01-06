@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Diagnostics;
 
 namespace cp365
 {
@@ -32,7 +33,7 @@ namespace cp365
             {
                 if(xmlInArj>=50)
                 {
-                    arjCount++;
+                    ++arjCount;
                     xmlInArj = 0;
                     aout = new AFNOutFile(arjCount);
                     arjFiles.Add(aout);
@@ -44,18 +45,49 @@ namespace cp365
             // теперь у нас есть массив arjFiles с файлами xml
             // PBx подписываем, остальное - шифруем
             //   P.S. arjName - без пути, в arj.xmlFiles - полные пути
-            string err = "";
             foreach (AFNOutFile arj in arjFiles)
             {
                 foreach(string xmlFile in arj.xmlFiles)
                 {
-                    // для каждлго файла - подписать
+                    // для кажд.файла - подписать
+                    string err = "";
                     Signature.Sign(xmlFile,out err);
-                }
-                // шифруем
+                    string shortXmlName = Path.GetFileName(xmlFile).ToUpper();
+                    if (shortXmlName.Substring(0, 2) != "PB")
+                    {
+                        if (Signature.Encrypt(xmlFile, out err) != 0)
+                        {
+                            errorMessage += err;
+                        } 
+                        else
+                            xmlFile.ToUpper().Replace(".XML", ".VRB");
+                    }
 
+                }
             }
-            
+            if (!String.IsNullOrEmpty(errorMessage))
+                return;
+            // теперь в WORK у нас смесь .xml и .vrb
+            // их надо упаковать в arj и поместить файлы в OUT
+            // файлы скидываем в lst.txt
+            string outDir = Config.OutDir;
+            foreach (AFNOutFile arj in arjFiles)
+            {
+                foreach (string xmlFile in  arj.xmlFiles)
+                {
+
+                }
+                string outName = outDir + "\\" + arj.arjName;
+                Process ps = new Process();
+                ps.StartInfo.FileName = "arj32.exe";
+                ps.StartInfo.Arguments = "a -e " + outName + " " + tempDir; // ДОДЕЛАТЬ!
+                ps.StartInfo.UseShellExecute = false;
+                ps.Start();
+                ps.WaitForExit();
+            }
+
+            Config.SerialNum = arjCount;
+
         }
     }
 }
