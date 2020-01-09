@@ -64,6 +64,7 @@ namespace cp365
             if(!String.IsNullOrEmpty(errorMessage))
             {
                 MessageBox.Show(errorMessage, "Ошибка");
+                this.Close();
                 return;
              }
               Config.SerialNum = seqNumber;

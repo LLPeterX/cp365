@@ -11,6 +11,8 @@ namespace cp365
 {
     public static class Signature
     {
+        public const int OK = 0;
+        public const int ERROR = 1;
         private static bool use_virtual_fdd = Config.UseVirtualFDD;
         private static bool isInitialized = false;
         private const string SIG_PROGRAM = "spki1utl.exe";
@@ -115,9 +117,9 @@ namespace cp365
             if (!revertFile(file_name, signedName))
             {
                 MessageBox.Show("Не удалось подписать файл " + file_name);
-                return 1;
+                return ERROR;
             }
-            return 0;
+            return OK;
         }
 
         static public int Encrypt(String file_name, string key, out string result)
@@ -130,10 +132,10 @@ namespace cp365
             if (!revertFile(file_name, encryptedName))
             {
                 MessageBox.Show("Не удалось зашифровать файл " + file_name);
-                return 1;
+                return ERROR;
 
             }
-            return (0);
+            return (OK);
         }
         // модификация со ссылкой на ключ из конфига
         static public int Encrypt(String file_name, out string result)
@@ -146,10 +148,10 @@ namespace cp365
             if (!revertFile(file_name, encryptedName))
             {
                 MessageBox.Show("Не удалось зашифровать файл " + file_name);
-                return 1;
+                return ERROR;
 
             }
-            return (0);
+            return OK;
         }
 
         // расшифровка файла .vrb в .xml (дальнейшее преобразование будет далее)
@@ -166,12 +168,12 @@ namespace cp365
                 ungzip(new_name,".xml");
                 File.Delete(file_name);
 
-                return 0;
+                return OK;
             }
             else
             {
                 MessageBox.Show("Не удалось расшифровать файл\n" + file_name + "\nОшибка:\n" + result);
-                return 1;
+                return ERROR;
             }
         }
 
@@ -183,7 +185,7 @@ namespace cp365
 
             string result = null;
             ExecuteSpki(args, out result);
-            return revertFile(srcFileName, dstFileName) ? 0 : 1;
+            return revertFile(srcFileName, dstFileName) ? OK : ERROR;
 
         }
 

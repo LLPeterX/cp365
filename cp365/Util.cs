@@ -12,9 +12,7 @@ namespace cp365
         // Преобразорвание DateTime в строку YYYYMMDD
         public static string DateToYMD(DateTime d)
         {
-            if (d == null)
-                return DateTime.Now.ToString("yyyyMMdd");
-            return d.ToString("yyyyMMdd");
+            return d.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
             
         }
 

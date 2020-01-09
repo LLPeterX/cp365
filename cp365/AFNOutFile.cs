@@ -17,7 +17,7 @@ namespace cp365
             this.arjName = "AFN_" +
               Config.BIK.Substring(2) + "_" +
               "MIFNS00_" +
-              DateTime.Now.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture) + "_" +
+              Util.DateToYMD(DateTime.Now) + "_" +
               seqNo.ToString("D5") +
               ".ARJ";
             xmlFiles = new List<string>();

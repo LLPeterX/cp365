@@ -29,6 +29,7 @@ namespace cp365
             int xmlInArj = 0;
             AFNOutFile aout = new AFNOutFile(arjCount);
             arjFiles.Add(aout);
+            string err = "";
             foreach(string fileName in Directory.GetFiles(Config.WorkDir))
             {
                 if(xmlInArj>=50)
@@ -50,7 +51,6 @@ namespace cp365
                 foreach(string xmlFile in arj.xmlFiles)
                 {
                     // для кажд.файла - подписать
-                    string err = "";
                     Signature.Sign(xmlFile,out err);
                     string shortXmlName = Path.GetFileName(xmlFile).ToUpper();
                     if (shortXmlName.Substring(0, 2) != "PB")
@@ -71,22 +71,30 @@ namespace cp365
             // их надо упаковать в arj и поместить файлы в OUT
             // файлы скидываем в lst.txt
             string outDir = Config.OutDir;
+            errorMessage = "";
             foreach (AFNOutFile arj in arjFiles)
             {
+                StringBuilder sb = new StringBuilder();
                 foreach (string xmlFile in  arj.xmlFiles)
                 {
-
+                    sb.Append(xmlFile);
+                    sb.Append('\n');
                 }
+                File.WriteAllText("files.lst", sb.ToString());
                 string outName = outDir + "\\" + arj.arjName;
                 Process ps = new Process();
                 ps.StartInfo.FileName = "arj32.exe";
-                ps.StartInfo.Arguments = "a -e " + outName + " " + tempDir; // ДОДЕЛАТЬ!
+                ps.StartInfo.Arguments = "a -e " + outName + " !files.lst";
                 ps.StartInfo.UseShellExecute = false;
                 ps.Start();
                 ps.WaitForExit();
-            }
+                if(File.Exists(outName))
+                {
 
-            Config.SerialNum = arjCount;
+                    if(Signature.Sign(outName, out err)!=0)
+                        errorMessage += err;
+                }
+            }
 
         }
     }
