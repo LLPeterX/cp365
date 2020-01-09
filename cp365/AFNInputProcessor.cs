@@ -14,6 +14,7 @@ namespace cp365
         private string AFNname; // полный путь к файлу AFN
         private string shortAFNname; // короткое имя AFN
         private string tempDir; // отдельная переменная, чтобы лишний раз не пересчитывать Config
+        private FormMessage info;
 
         // конструктор
         public AFNInputProcessor(string afn_name)
@@ -21,12 +22,17 @@ namespace cp365
             this.AFNname = afn_name;
             this.shortAFNname = Path.GetFileName(afn_name).ToUpper();
             this.tempDir = Config.TempDir;
+            info = new FormMessage();
+            info.ShowTitle("Обработка входящих файлов");
+            info.Show();
         }
         public bool Decrypt()
         {
             // выбор файла AFNxxx.arj
             // надо ли снимать ЭЦП, если и так все прекрасно разархивируется?
             // разархивируем AFN
+            info.ShowInfo("Распаковка " + AFNname);
+            info.SetProgressRanges(1);
             Util.CleanDirectory(Config.TempDir);
             Process ps = new Process();
             ps.StartInfo.FileName = "arj32.exe";
@@ -36,12 +42,14 @@ namespace cp365
             ps.WaitForExit();
             // теперь в tempDir разархивированные файлы - *.vrb и *.xml
             // расшифровать *.vrb в .xml
+            info.ShowInfo("Инициализация Сигнатуры");
             if (!Signature.Initialize())
             {
                 Util.CleanDirectory(tempDir);
                 return false;
             }
             // получаем список зашифрованных файлов (у них расширение .vrb) и пробуем расшифровать  
+            info.ShowInfo("Расшифровка " + AFNname);
             string[] vrbFiles = Directory.GetFiles(tempDir, "*.vrb"); // в массиве - полные имена
             foreach (string fname in vrbFiles)
             {
@@ -55,9 +63,12 @@ namespace cp365
             // На выходе после расшифровки получаем набор файлов *.xml
             // снятие ЭЦП с файлов *.xml
             string[] xmlFiles = Directory.GetFiles(tempDir, "*.xml");
+            info.SetProgressRanges(xmlFiles.Length);
+            info.ShowInfo("Снятие ЭЦП...");
             foreach (string fname in xmlFiles)
             {
                 Signature.DeleteSign(fname);
+                info.UpdateProgress();
             }
             // копирование в каталог IN\YYYYMMDD
             Util.CopyFilesToBackupDirectory(Config.InDir, xmlFiles);
@@ -65,6 +76,8 @@ namespace cp365
             string strStat = GetStatistic(xmlFiles);
             bool makePB1 = Config.CreatePB1;
             string workDir = Config.WorkDir;
+            info.ShowInfo("Формирование PB");
+            info.SetProgressRanges(xmlFiles.Length);
             foreach (string fname in xmlFiles) //fname = fullpath файла из каталога TEMP
             {
                 string justName = Path.GetFileName(fname).ToUpper();
@@ -76,7 +89,9 @@ namespace cp365
                     PB pb1 = new PB(fname, PBTYPE.SUCCESS);
                     pb1.Save(workDir);
                 }
+                info.UpdateProgress();
             }
+            info.Close();
             MessageBox.Show(strStat, shortAFNname, MessageBoxButtons.OK, MessageBoxIcon.Information);
             return true;
         }
@@ -102,6 +117,12 @@ namespace cp365
                 sb.Append("\n");
             }
             return sb.ToString();
+        }
+
+        public void Dispose()
+        {
+            if (info != null)
+                info.Close();
         }
     }
 }
