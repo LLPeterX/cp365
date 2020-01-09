@@ -23,7 +23,6 @@ namespace cp365
             this.shortAFNname = Path.GetFileName(afn_name).ToUpper();
             this.tempDir = Config.TempDir;
             info = new FormMessage();
-            info.ShowTitle("Обработка входящих файлов");
             info.Show();
         }
         public bool Decrypt()
@@ -31,7 +30,8 @@ namespace cp365
             // выбор файла AFNxxx.arj
             // надо ли снимать ЭЦП, если и так все прекрасно разархивируется?
             // разархивируем AFN
-            info.ShowInfo("Распаковка " + AFNname);
+            info.ShowTitle("Обработка " + AFNname);
+            info.ShowInfo("Распаковка...");
             info.SetProgressRanges(1);
             Util.CleanDirectory(Config.TempDir);
             Process ps = new Process();
