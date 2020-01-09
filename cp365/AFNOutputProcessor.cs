@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace cp365
 {
@@ -15,6 +16,7 @@ namespace cp365
         public bool IsSuccess = true;
         private int arjNumber; // порядковый номер файла ARJ за тек.дату
         public int arjCount; // общее число файлов ARJ
+        private FormMessage info;
         
         public AFNOutputProcessor(int porNo)
         {
@@ -22,24 +24,31 @@ namespace cp365
             this.arjFiles = new List<AFNOutFile>();
             this.arjNumber = porNo; // начальный N архива
             this.arjCount = 1; // кол-во сформированных ARJ-файлов
+            info = new FormMessage();
+            info.ShowTitle("Подготовка файлов");
+            info.Show();
         }
 
         public void Process(out string errorMessage)
         {
             // Обработка файлов в каталоге WORK
+            info.ShowInfo("Инициализация Сигнатуры");
+            info.SetProgressRanges(1);
             if (!Signature.Initialize())
             {
                 errorMessage = "Ошибка инициализации СКАД \"Сигнатура\"";
                 IsSuccess = false;
+                info.Close();
                 return;
             }
             errorMessage = null;
             int xmlInArj = 0;
-            Util.CopyFilesToBackupDirectory(Config.WorkDir); // backup to WORK\yyymmdd\
+            Util.CopyFilesToBackupDirectory(workDir); // backup to WORK\yyymmdd\
             AFNOutFile aout = new AFNOutFile(arjNumber);
             arjFiles.Add(aout);
             string err = "";
-            foreach(string fileName in Directory.GetFiles(Config.WorkDir))
+            info.SetProgressRanges(Directory.GetFiles(workDir).Length);
+            foreach (string fileName in Directory.GetFiles(workDir))
             {
                 if(xmlInArj>=50)
                 {
@@ -55,6 +64,7 @@ namespace cp365
             // теперь у нас есть массив arjFiles с файлами xml
             // PBx подписываем, остальное - шифруем
             //   P.S. arjName - без пути, в arj.xmlFiles - полные пути
+            info.ShowInfo("Подпись и шифрование файлов...");
             foreach (AFNOutFile arj in arjFiles)
             {
                 foreach(string xmlFile in arj.xmlFiles)
@@ -72,7 +82,7 @@ namespace cp365
                         else
                             xmlFile.ToUpper().Replace(".XML", ".VRB");
                     }
-
+                    info.UpdateProgress();
                 }
             }
             if (!String.IsNullOrEmpty(errorMessage) || !IsSuccess)
@@ -84,6 +94,8 @@ namespace cp365
             errorMessage = "";
             string[] arjBkp = new string[arjCount];
             int arjNo = 0;
+            info.ShowInfo("Архивирование....");
+            info.SetProgressRanges(arjCount);
             foreach (AFNOutFile arj in arjFiles)
             {
                 StringBuilder sb = new StringBuilder();
@@ -112,6 +124,7 @@ namespace cp365
                         break;
                     }
                 }
+                info.UpdateProgress();
             }
             if (IsSuccess)
             {
@@ -127,13 +140,23 @@ namespace cp365
                     sb.Append('\n');
                 }
                 errorMessage = sb.ToString();
-            } 
+            }
+            info.Close();
             try
             {
                 File.Delete("files.lst");
             }
             catch { }
         }
+
+        public void Dispose()
+        {
+            if (this.info != null)
+                info.Close();
+
+        }
+
+        
     }
     // TODO: проверить формирование файлов с BOS,BV и т.п. - которые следует шифровать
 }

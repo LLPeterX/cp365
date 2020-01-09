@@ -83,6 +83,7 @@
             this.Controls.Add(this.porNum);
             this.Controls.Add(this.lbInfo);
             this.Name = "FormSend";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Формирование файлов в ФНС";
             this.ResumeLayout(false);
             this.PerformLayout();
