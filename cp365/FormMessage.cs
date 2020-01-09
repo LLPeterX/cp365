@@ -14,9 +14,14 @@ namespace cp365
     {
         public string title;
         public string text;
+        private int MainX = FormMain.ActiveForm.Width;
+        private int MainY = FormMain.ActiveForm.Height;
+
         public FormMessage()
         {
             InitializeComponent();
+            this.Top = FormMain.ActiveForm.Top + FormMain.ActiveForm.Height / 2 - this.Height / 2;
+            this.Left = FormMain.ActiveForm.Left + FormMain.ActiveForm.Width / 2 - this.Width / 2;
         }
 
         public void ShowInfo(string text)

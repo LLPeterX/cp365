@@ -25,6 +25,8 @@ namespace cp365
             // ниже в датах заменяем время на 00:00:00 или 23:59:00
             this.dateFrom.Value = CreateDate(DateTime.Now, true); 
             this.dateTo.Value = CreateDate(DateTime.Now, false);
+            this.dateFrom_ValueChanged(null, null);
+            this.dateTo_ValueChanged(null, null);
         }
 
         

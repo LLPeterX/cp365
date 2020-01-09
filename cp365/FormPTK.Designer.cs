@@ -56,7 +56,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 373);
+            this.label1.Location = new System.Drawing.Point(133, 373);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(88, 13);
             this.label1.TabIndex = 1;
@@ -65,7 +65,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(290, 373);
+            this.label2.Location = new System.Drawing.Point(328, 373);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(81, 13);
             this.label2.TabIndex = 2;
@@ -73,25 +73,25 @@
             // 
             // dateFrom
             // 
-            this.dateFrom.CustomFormat = "dd.MM.yyyy HH:mm.ss";
+            this.dateFrom.CustomFormat = "dd.MM.yyyy";
             this.dateFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateFrom.Location = new System.Drawing.Point(117, 369);
+            this.dateFrom.Location = new System.Drawing.Point(228, 369);
             this.dateFrom.MaxDate = new System.DateTime(2026, 12, 31, 0, 0, 0, 0);
             this.dateFrom.MinDate = new System.DateTime(2017, 1, 1, 0, 0, 0, 0);
             this.dateFrom.Name = "dateFrom";
-            this.dateFrom.Size = new System.Drawing.Size(127, 20);
+            this.dateFrom.Size = new System.Drawing.Size(80, 20);
             this.dateFrom.TabIndex = 3;
             this.dateFrom.ValueChanged += new System.EventHandler(this.dateFrom_ValueChanged);
             // 
             // dateTo
             // 
-            this.dateTo.CustomFormat = "dd.MM.yyyy HH:mm.ss";
+            this.dateTo.CustomFormat = "dd.MM.yyyy";
             this.dateTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTo.Location = new System.Drawing.Point(377, 369);
+            this.dateTo.Location = new System.Drawing.Point(415, 369);
             this.dateTo.MaxDate = new System.DateTime(2026, 12, 31, 0, 0, 0, 0);
             this.dateTo.MinDate = new System.DateTime(2017, 1, 1, 0, 0, 0, 0);
             this.dateTo.Name = "dateTo";
-            this.dateTo.Size = new System.Drawing.Size(127, 20);
+            this.dateTo.Size = new System.Drawing.Size(80, 20);
             this.dateTo.TabIndex = 4;
             this.dateTo.ValueChanged += new System.EventHandler(this.dateTo_ValueChanged);
             // 

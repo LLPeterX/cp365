@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.IO;
 
 
 namespace cp365
@@ -141,10 +142,17 @@ namespace cp365
                             if(mz!=null)
                             {
                                 string err = null;
-                                if (!mz.IsAFN())
+                                if (!File.Exists(fullPath))
                                 {
-                                    err = "Без AFN";
-                                    mz.valid = false;
+                                    err = "Не найден";
+                                }
+                                else
+                                {
+                                    if (!mz.IsAFN())
+                                    {
+                                        err = "Без AFN";
+                                        mz.valid = false;
+                                    }
                                 }
                                 mz.mzFileDate = (DateTime)reader["dt"];
                                 mz.mzErr = err;
