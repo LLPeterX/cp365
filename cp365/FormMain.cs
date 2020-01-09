@@ -63,6 +63,9 @@ namespace cp365
 
         private void исходящиеToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // проверить, что чт-то есть для отправки
+            if (Util.GetCountOfFilesInDirectory(Config.WorkDir) == 0)
+                return;
             FormSend fs = new FormSend();
             fs.ShowDialog();
         }

@@ -16,13 +16,13 @@ namespace cp365
         {
             InitializeComponent();
             this.porNum.Text = GetNextNumber();
-            SetLabelText();
+            this.lbInfo.Text = "Порядковый N файла за " + Util.DateToYMD(DateTime.Now) + ":";
         }
 
         private string GetNextNumber()
         {
             int currentNumber = Config.SerialNum;
-            string currentDate = DateTime.Now.ToString("yyyyMMdd");
+            string currentDate = Util.DateToYMD(DateTime.Now);
             if (Config.SerialDate == currentDate)
             {
                 currentNumber++;
@@ -30,12 +30,6 @@ namespace cp365
             else
                 currentNumber = 1;
             return currentNumber.ToString();
-        }
-
-        private void SetLabelText()
-        {
-            this.lbInfo.Text = "Порядковый N файла за " + 
-                DateTime.Now.ToString("dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture)+": ";
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -46,8 +40,6 @@ namespace cp365
         private void btnOK_Click(object sender, EventArgs e)
         {
             int seqNumber;
-            if (Util.GetCountOfFilesInDirectory(Config.WorkDir) == 0)
-                return;
             try
             {
                 seqNumber = Convert.ToInt32(this.porNum.Text);
@@ -57,19 +49,21 @@ namespace cp365
                 MessageBox.Show("Неверный порядковый номер");
                 return;
             }
+            if(seqNumber <=0 || seqNumber>99999)
+            {
+                MessageBox.Show("Неверный порядковый номер");
+                return;
+            }
             // чо-то обрабатываем
-            AFNOutputProcessor ao = new AFNOutputProcessor();
+            AFNOutputProcessor ao = new AFNOutputProcessor(seqNumber);
             string errorMessage = "";
             ao.Process(out errorMessage);
-            if(!String.IsNullOrEmpty(errorMessage))
+            MessageBox.Show(errorMessage);
+            if (ao.IsSuccess)
             {
-                MessageBox.Show(errorMessage, "Ошибка");
-                this.Close();
-                return;
-             }
-              Config.SerialNum = seqNumber;
-              Config.SerialDate = DateTime.Now.ToString("yyyyMMdd");
-            
+                Config.SerialNum = seqNumber+ao.arjCount;
+                Config.SerialDate = Util.DateToYMD(DateTime.Now);
+            }
             this.Close();
         }
     }

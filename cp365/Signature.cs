@@ -42,7 +42,8 @@ namespace cp365
             if (isInitialized) return true; // success
 
             SIG_PROFILE = Config.Profile;
-            CheckProfile(SIG_PROFILE);
+            if (!CheckProfile(SIG_PROFILE))
+                return false;
             // Проверяем, что вставлен/смонтирован правильный носитель
             if (!isVdkeysPresent())
             {
@@ -278,7 +279,7 @@ namespace cp365
         public static bool CheckProfile(string profile)
         {
             profile = profile.Trim();
-            if (String.IsNullOrEmpty(profile) || profile.Length < 3) return false;
+            if (String.IsNullOrEmpty(profile)) return false;
             Int32 profilesCount = (Int32)Registry.GetValue(HKCU_PROFILE, "count", 0);
             profilesBaseDirectory = (String)Registry.GetValue(HKCU_PROFILE, "BasePath",null);
             if (profilesCount == 0)

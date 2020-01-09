@@ -85,5 +85,25 @@ namespace cp365
         {
             return Directory.GetFiles(directory).Length;
         }
+
+        public static void CopyFilesToBackupDirectory(string mainDirectory, string[] files = null)
+        {
+            string[] sourceFiles;
+            if(files == null)
+            {
+                sourceFiles = Directory.GetFiles(mainDirectory);
+            } else
+            {
+                sourceFiles = files;
+            }
+            string backupDirectory = mainDirectory + "\\" + Util.DateToYMD(DateTime.Now) + "\\";
+            if (!Directory.Exists(backupDirectory))
+                Directory.CreateDirectory(backupDirectory);
+            foreach(string fileName in sourceFiles)
+            {
+                string destinationFileName = backupDirectory + Path.GetFileName(fileName);
+                File.Copy(fileName, destinationFileName,true);
+            }
+        }
     }
 }

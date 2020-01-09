@@ -60,9 +60,7 @@ namespace cp365
                 Signature.DeleteSign(fname);
             }
             // копирование в каталог IN\YYYYMMDD
-            string subdir = Config.InDir + "\\" + Util.DateToYMD(DateTime.Now);
-            if (!Directory.Exists(subdir))
-                Directory.CreateDirectory(subdir);
+            Util.CopyFilesToBackupDirectory(Config.InDir, xmlFiles);
             string invDir = Config.INVDir;
             string strStat = GetStatistic(xmlFiles);
             bool makePB1 = Config.CreatePB1;
@@ -70,10 +68,8 @@ namespace cp365
             foreach (string fname in xmlFiles) //fname = fullpath файла из каталога TEMP
             {
                 string justName = Path.GetFileName(fname).ToUpper();
-                string outName = subdir + "\\" + justName;
-                File.Copy(fname, outName, true);
-                outName = invDir + "\\" + justName;
-                if (Directory.Exists(invDir))
+                string outName = invDir + "\\" + justName;
+                if (Directory.Exists(invDir) && justName.Substring(0, 3) != "KWT")
                     File.Copy(fname, outName, true);
                 if (makePB1 && justName.Substring(0, 3) != "KWT")
                 {
