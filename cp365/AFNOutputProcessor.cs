@@ -38,6 +38,7 @@ namespace cp365
             {
                 errorMessage = "Ошибка инициализации СКАД \"Сигнатура\"";
                 IsSuccess = false;
+                Signature.isInitialized = false;
                 info.Close();
                 return;
             }

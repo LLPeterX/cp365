@@ -40,8 +40,8 @@ namespace cp365
         static public bool Initialize()
         {
             if (isInitialized) return true;
-            // Тут может быть засада, если мы в конфиге меняем профиль или иные параметры
-
+            // Тут может быть засада, если мы в конфиге меняем профиль или иные параметры+
+            // Поэтому после конфига isInitialized = false
             SIG_PROFILE = Config.Profile;
             if (!CheckProfile(SIG_PROFILE))
                 return false;
@@ -110,11 +110,6 @@ namespace cp365
 
         static public int Sign(String file_name, out string result)
         {
-            if (!isInitialized)
-            {
-                Initialize();
-            }
-
             String signedName = file_name + ".sig";
             String args = "-sign -profile " + SIG_PROFILE + " -registry -data " + file_name + " -out " + signedName;
             ExecuteSpki(args, out result);

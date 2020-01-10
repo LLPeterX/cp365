@@ -23,6 +23,8 @@ namespace cp365
 
         private void menuExit_Click(object sender, EventArgs e)
         {
+            if (Signature.isInitialized)
+                Signature.Unload();
             Application.Exit();
         }
 
