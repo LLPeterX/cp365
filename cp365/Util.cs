@@ -10,12 +10,8 @@ namespace cp365
     public static class Util
     {
         // Преобразорвание DateTime в строку YYYYMMDD
-        public static string DateToYMD(DateTime d)
-        {
-            return d.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
-            
-        }
-
+        public static string DateToYMD(DateTime d) => d.ToString("yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+     
         // Преобразование даты в виде YYYYMMDD в DateTime
         public static DateTime DateFromYMD(string str)
         {
@@ -46,45 +42,17 @@ namespace cp365
             }
         }
 
-        public static string GUID()
-        {
-            return Guid.NewGuid().ToString().ToUpper();
-        }
+        public static string GUID() => Guid.NewGuid().ToString().ToUpper();
+        
 
-        public static string XMLDate(DateTime d)
-        {
-            return d.ToString("yyyy-MM-dd");
-        }
-        // получить имя файла без расширения
-        public static string XMLDateTime(DateTime d)
-        {
-            //return d.ToString("yyyy-MM-ddThh:mm:ss");
-            return d.ToString("s");
-        }
+        public static string XMLDate(DateTime d) => d.ToString("yyyy-MM-dd");
+        
+        public static string XMLDateTime(DateTime d) => d.ToString("s");
 
-        public static string DateToSQL(DateTime d)
-        {
-            // засада: MM/dd/yyyy на самом деле возвращавется как MM.dd.yyyy
-            // решается добавлением IFormatProvider = System.Globalization.CultureInfo.InvariantCulture
-            string result = d.ToString("MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-            return result;
-        }
-        public static DateTime DateFromSQL(string s)
-        {
-            if (!String.IsNullOrEmpty(s))
-            {
-                //return DateTime.ParseExact(s, "s", System.Globalization.CultureInfo.InvariantCulture);
-                DateTime d = DateTime.ParseExact(s, "dd.MM.yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-                return d;
-            }
-            else
-                return DateTime.Now;
-        }
+        public static string DateToSQL(DateTime d) => d.ToString("MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+        public static DateTime DateFromSQL(string s) => String.IsNullOrEmpty(s) ? DateTime.Now : DateTime.ParseExact(s, "dd.MM.yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
 
-        public static int GetCountOfFilesInDirectory(string directory)
-        {
-            return Directory.GetFiles(directory).Length;
-        }
+        public static int GetCountOfFilesInDirectory(string directory) => Directory.GetFiles(directory).Length;
 
         public static void CopyFilesToBackupDirectory(string mainDirectory, string[] files = null)
         {

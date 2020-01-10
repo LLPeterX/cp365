@@ -14,13 +14,13 @@ namespace cp365
         public const int OK = 0;
         public const int ERROR = 1;
         private static bool use_virtual_fdd = Config.UseVirtualFDD;
-        private static bool isInitialized = false;
+        public static bool isInitialized = false;
         private const string SIG_PROGRAM = "spki1utl.exe";
         private static string SIG_PROFILE;
         private static string profilesBaseDirectory = null;
-        private const string HKLM_SIGNATURE64 = @"HKEY_LOCAL_MACHINE\\SOFTWARE\\MDPREI\\scsref\\CurrentVersion";
-        private const string HKLM_SIGNATURE32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\MDPREI\scs\CurrentVersion";
-        // в реестре значение InstallPath
+        //private const string HKLM_SIGNATURE64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\MDPREI\scsref\CurrentVersion";
+        //private const string HKLM_SIGNATURE32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\MDPREI\scs\CurrentVersion";
+        // см. в реестре значение InstallPath
 
         private const string HKCU_PROFILE = @"HKEY_CURRENT_USER\Software\MDPREI\spki\Profiles";
         /* внутри значения:
@@ -39,7 +39,8 @@ namespace cp365
         // 2) Проверяем наличие A:\vdkeys
         static public bool Initialize()
         {
-            if (isInitialized) return true; // success
+            if (isInitialized) return true;
+            // Тут может быть засада, если мы в конфиге меняем профиль или иные параметры
 
             SIG_PROFILE = Config.Profile;
             if (!CheckProfile(SIG_PROFILE))
@@ -101,6 +102,9 @@ namespace cp365
             catch
             {
                 MessageBox.Show("Предупреждение: диск A: не отключен");
+            } finally
+            {
+                isInitialized = false;
             }
         }
 
@@ -246,15 +250,12 @@ namespace cp365
             return false;
         }
         // существует ли диск ("A:" или "B:")
-        private static bool isVdkeysPresent()
-        {
-            return Directory.Exists("A:\\vdkeys");
-        }
+        private static bool isVdkeysPresent() => Directory.Exists("A:\\vdkeys");
+        
 
         private static void ExecuteSpki(string arguments, out string result)
         {
             result = null;
-            //Application.UseWaitCursor = true; // один хер не помгает
             Process ps = new Process();
             ps.StartInfo.FileName = SIG_PROGRAM; // spki1utl.exe
             ps.StartInfo.Arguments = arguments;
@@ -278,7 +279,6 @@ namespace cp365
         // Проверить наличие профиля. Для этого смотрим в реестре
         public static bool CheckProfile(string profile)
         {
-            profile = profile.Trim();
             if (String.IsNullOrEmpty(profile)) return false;
             Int32 profilesCount = (Int32)Registry.GetValue(HKCU_PROFILE, "count", 0);
             profilesBaseDirectory = (String)Registry.GetValue(HKCU_PROFILE, "BasePath",null);
@@ -297,20 +297,17 @@ namespace cp365
             return false;
         }
 
-        // Проверить наличие ключа в профиле
-        // 1. открываем base_dir\profile\Local.gdbm
+        // Проверить наличие ключа в списке сертификатов
+        // 1. открываем {profiles_dir}\{profile}\Local.gdbm
         // 2. Ищем ключ в содержимом файла тупо по сопадению подстрок
         public static bool CheckKey(string profile, string key)
         {
             if (key.Length != 12) return false;
-            string pathGDBM = profilesBaseDirectory + "\\" + profile + "\\Local.gdbm";
+            string gdbmFile = profilesBaseDirectory + "\\" + profile + "\\Local.gdbm";
             try
             {
-                string gdbm = File.ReadAllText(pathGDBM);
-                bool result = gdbm.Contains(key);
-                return result;
-                //return File.ReadAllText(pathGDBM).Contains(key);
-            } catch // файла нет или ошибка
+                return File.ReadAllText(gdbmFile).Contains(key);
+            } catch // файла нет или ключ не найден в файле
             {
                 return false;
             }

@@ -87,16 +87,17 @@ namespace cp365
                 Config.Filial = this.fil.Text;
             }
             // здесь надо проверить профиль и ключ
+           this.profile.Text = this.profile.Text.Trim();
            if (Signature.CheckProfile(this.profile.Text))
                 {
-                  Config.Profile = this.profile.Text.Trim();
+                  Config.Profile = this.profile.Text;
                 } else
                 {
                      MessageBox.Show("Неверный профиль СКАД \"Сигнатура\":" + this.profile.Text, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
             }
             // проверяеи ключ
-            if (Signature.CheckKey(this.profile.Text.Trim(), this.fnskey.Text))
+            if (Signature.CheckKey(this.profile.Text, this.fnskey.Text))
             {
                 Config.FNSKey = this.fnskey.Text;
             }
@@ -158,6 +159,7 @@ namespace cp365
             Config.ELODir = this.eloDir.Text.Trim();
             if (warnings.Length > 2)
                 MessageBox.Show(warnings, "Ошибки кофигурации", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            Signature.isInitialized = false;
             this.Close();
         }
 

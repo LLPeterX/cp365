@@ -38,6 +38,8 @@ namespace cp365
             ps.StartInfo.FileName = "arj32.exe";
             ps.StartInfo.Arguments = "x -y " + AFNname + " " + tempDir;
             ps.StartInfo.UseShellExecute = false;
+            ps.StartInfo.CreateNoWindow = true;
+            ps.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             ps.Start();
             ps.WaitForExit();
             // теперь в tempDir разархивированные файлы - *.vrb и *.xml
