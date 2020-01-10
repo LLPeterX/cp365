@@ -15,28 +15,18 @@ namespace cp365
         // Преобразование даты в виде YYYYMMDD в DateTime
         public static DateTime DateFromYMD(string str)
         {
-            DateTime defaultDate = DateTime.Today;
-            if (String.IsNullOrEmpty(str) || str.Length != 8) return defaultDate;
-            try
-            {
-                try { 
-                    DateTime newDate = DateTime.ParseExact(str, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
-                    return newDate;
-                } catch {
-                    return defaultDate;
-                }
-            }
-            catch
-            {
-                return defaultDate;
-            }
+            if (String.IsNullOrEmpty(str) || str.Length != 8) return DateTime.Now;
+            try { 
+                return DateTime.ParseExact(str, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+           } catch {
+                return DateTime.Now;
+             }
         }
 
         // удалить все файлы из заданного каталога
         public static void CleanDirectory(string dir)
         {
-            string[] files = Directory.GetFiles(dir);
-            foreach(string fileName in files)
+            foreach(string fileName in Directory.GetFiles(dir))
             {
                 File.Delete(fileName);
             }
@@ -44,13 +34,10 @@ namespace cp365
 
         public static string GUID() => Guid.NewGuid().ToString().ToUpper();
         
-
-        public static string XMLDate(DateTime d) => d.ToString("yyyy-MM-dd");
-        
         public static string XMLDateTime(DateTime d) => d.ToString("s");
 
         public static string DateToSQL(DateTime d) => d.ToString("MM/dd/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-        public static DateTime DateFromSQL(string s) => String.IsNullOrEmpty(s) ? DateTime.Now : DateTime.ParseExact(s, "dd.MM.yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+        //public static DateTime DateFromSQL(string s) => String.IsNullOrEmpty(s) ? DateTime.Now : DateTime.ParseExact(s, "dd.MM.yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
 
         public static int GetCountOfFilesInDirectory(string directory) => Directory.GetFiles(directory).Length;
 
@@ -64,12 +51,12 @@ namespace cp365
             {
                 sourceFiles = files;
             }
-            string backupDirectory = mainDirectory + "\\" + Util.DateToYMD(DateTime.Now) + "\\";
+            string backupDirectory = mainDirectory + "\\" + DateToYMD(DateTime.Now);
             if (!Directory.Exists(backupDirectory))
                 Directory.CreateDirectory(backupDirectory);
             foreach(string fileName in sourceFiles)
             {
-                string destinationFileName = backupDirectory + Path.GetFileName(fileName);
+                string destinationFileName = backupDirectory + "\\"+Path.GetFileName(fileName);
                 File.Copy(fileName, destinationFileName,true);
             }
         }
