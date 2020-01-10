@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace cp365
 {
-    class AFNOutputProcessor
+    class AFNOutputProcessor : IDisposable
     {
         private string workDir;
         private List<AFNOutFile> arjFiles;
@@ -29,12 +29,14 @@ namespace cp365
             info.Show();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1304:Укажите CultureInfo", Justification = "<Ожидание>")]
         public void Process(out string errorMessage)
         {
             // Обработка файлов в каталоге WORK
-            info.ShowInfo("Инициализация Сигнатуры");
+            info.SetText("Инициализация Сигнатуры");
             info.SetProgressRanges(1);
-            if (!Signature.Initialize())
+            var (resCode, resString) = Signature.Initialize(Config.Profile, Config.UseVirtualFDD);
+            if (resCode != Signature.SUCCESS)
             {
                 errorMessage = "Ошибка инициализации СКАД \"Сигнатура\"";
                 IsSuccess = false;
@@ -47,7 +49,6 @@ namespace cp365
             Util.CopyFilesToBackupDirectory(workDir); // backup to WORK\yyymmdd\
             AFNOutFile aout = new AFNOutFile(arjNumber);
             arjFiles.Add(aout);
-            string err = "";
             info.SetProgressRanges(Directory.GetFiles(workDir).Length);
             foreach (string fileName in Directory.GetFiles(workDir))
             {
@@ -65,23 +66,28 @@ namespace cp365
             // теперь у нас есть массив arjFiles с файлами xml
             // PBx подписываем, остальное - шифруем
             //   P.S. arjName - без пути, в arj.xmlFiles - полные пути
-            info.ShowInfo("Подпись и шифрование файлов...");
+            info.SetText("Подпись и шифрование файлов...");
             foreach (AFNOutFile arj in arjFiles)
             {
                 foreach(string xmlFile in arj.xmlFiles)
                 {
                     // для кажд.файла - подписать
-                    Signature.Sign(xmlFile,out err);
+                    (resCode, resString) = Signature.Sign(xmlFile);
+                    if(resCode!=Signature.SUCCESS)
+                    {
+                        break;
+                    }
                     string shortXmlName = Path.GetFileName(xmlFile).ToUpper();
                     if (shortXmlName.Substring(0, 2) != "PB")
                     {
-                        if (Signature.Encrypt(xmlFile, out err) != 0)
+                        (resCode, resString) = Signature.Encrypt(xmlFile,Config.FNSKey);
+                        if (resCode != Signature.SUCCESS)
                         {
-                            errorMessage += err;
+                            errorMessage += resString;
                             IsSuccess = false;
                         } 
                         else
-                            xmlFile.ToUpper().Replace(".XML", ".VRB");
+                            _ = xmlFile.ToUpper().Replace(".XML", ".VRB");
                     }
                     info.UpdateProgress();
                 }
@@ -95,7 +101,7 @@ namespace cp365
             errorMessage = "";
             string[] arjBkp = new string[arjCount];
             int arjNo = 0;
-            info.ShowInfo("Архивирование....");
+            info.SetText("Архивирование....");
             info.SetProgressRanges(arjCount);
             foreach (AFNOutFile arj in arjFiles)
             {
@@ -116,11 +122,13 @@ namespace cp365
                 ps.StartInfo.UseShellExecute = false;
                 ps.Start();
                 ps.WaitForExit();
+                ps.Dispose();
                 if(File.Exists(outName))
                 {
-                    if (Signature.Sign(outName, out err) != 0)
+                    (resCode, resString) = Signature.Sign(outName);
+                    if (resCode != Signature.SUCCESS)
                     {
-                        errorMessage += err;
+                        errorMessage += resString+"\n";
                         IsSuccess = false;
                         break;
                     }
@@ -147,7 +155,9 @@ namespace cp365
             {
                 File.Delete("files.lst");
             }
+#pragma warning disable CA1031 // Не перехватывать исключения общих типов
             catch { }
+#pragma warning restore CA1031 // Не перехватывать исключения общих типов
         }
 
         public void Dispose()

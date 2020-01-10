@@ -12,8 +12,8 @@ namespace cp365
 {
     public partial class FormMessage : Form
     {
-        public string title;
-        public string text;
+        //private string title;
+        //private string text;
 
         public FormMessage()
         {
@@ -22,7 +22,7 @@ namespace cp365
             this.Location = p;
         }
 
-        public void ShowInfo(string text)
+        public void SetText(string text)
         {
             this.label1.Text = text;
             this.Refresh();

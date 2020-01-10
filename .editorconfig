@@ -1,0 +1,43 @@
+﻿[*.cs]
+
+# CA1063: Правильно реализуйте IDisposable
+dotnet_diagnostic.CA1063.severity = none
+
+# CA1305: Укажите IFormatProvider
+dotnet_diagnostic.CA1305.severity = none
+
+# CA1062: Проверить аргументы или открытые методы
+dotnet_diagnostic.CA1062.severity = none
+
+# CA1304: Укажите CultureInfo
+dotnet_diagnostic.CA1304.severity = none
+
+# CA1307: Укажите StringComparison
+dotnet_diagnostic.CA1307.severity = none
+
+# CA1303: Не передавать литералы в качестве локализованных параметров
+dotnet_diagnostic.CA1303.severity = none
+
+# CA3075: Небезопасная обработка DTD в формате XML
+dotnet_diagnostic.CA3075.severity = none
+
+# CA2100: Проверка запросов SQL на уязвимости безопасности
+dotnet_diagnostic.CA2100.severity = none
+
+# CA1031: Не перехватывать исключения общих типов
+dotnet_diagnostic.CA1031.severity = none
+
+# CA1724: Имя типа Util полностью или частично конфликтует с именем пространства имен "System.Web.Util", определенным в .NET Framework. Переименуйте тип, чтобы устранить конфликт.
+dotnet_diagnostic.CA1724.severity = none
+
+# CA1812: VirtualFDD является внутренним классом, экземпляр которого никогда не создается. Если это так, удалите код из сборки. Если этот класс должен содержать только статические методы, сделайте его статическим (Shared в Visual Basic).
+dotnet_diagnostic.CA1812.severity = none
+
+# CA2000: Ликвидировать объекты перед потерей области
+dotnet_diagnostic.CA2000.severity = none
+
+# CA1060: Переместите вызовы PInvoke в класс собственных методов
+dotnet_diagnostic.CA1060.severity = none
+
+# CA1806: Не игнорируйте результаты метода
+dotnet_diagnostic.CA1806.severity = none

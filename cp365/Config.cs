@@ -15,29 +15,29 @@ namespace cp365
     public static class Config
     {
         private static IniFile iniFile = null;
-        private const string DEFAULT_DIR = @".\";
-        private const string CONFIG_FILENAME = @".\cp365.ini";
-        public const string PROGRAM_NAME = "cp365";
-        public const string PROGRAM_VERSION = "1.0";
-        public const string FORM_VERSION = "3.00";
+        private const string DefaultDir = @".\";
+        private const string INIFileName = @".\cp365.ini";
+        public const string PrgName = "cp365";
+        public const string PrgVersion = "1.0";
+        public const string FormVersion = "3.00";
         // private members
 
         public static string TempDir
         {
             get
             {
-                return GetValue("Paths", "TEMP", Path.GetFullPath(DEFAULT_DIR+"TEMP"));
+                return GetValue("Paths", "TEMP", Path.GetFullPath(DefaultDir+"TEMP"));
             }
             set
             {
-                SetValue("Paths", "TEMP", value);
+                SetValue("Paths", "TEMP", (value!=null) ? value : @".\TEMP");
             }
         }
         public static string WorkDir
         {
             get
             {
-                return GetValue("Paths", "WORK", Path.GetFullPath(DEFAULT_DIR + "WORK"));
+                return GetValue("Paths", "WORK", Path.GetFullPath(DefaultDir + "WORK"));
             }
             set
             {
@@ -48,44 +48,44 @@ namespace cp365
         {
             get
             {
-                return GetValue("Paths", "IN", Path.GetFullPath(DEFAULT_DIR +"IN"));
+                return GetValue("Paths", "IN", Path.GetFullPath(DefaultDir +"IN"));
             }
             set
             {
-                SetValue("Paths", "IN", value);
+                SetValue("Paths", "IN", (value!=null) ? value : @".\IN");
             }
         }
         public static string OutDir
         {
             get
             {
-                return GetValue("Paths", "OUT", Path.GetFullPath(DEFAULT_DIR + "OUT"));
+                return GetValue("Paths", "OUT", Path.GetFullPath(DefaultDir + "OUT"));
             }
             set
             {
-                SetValue("Paths", "OUT", value);
+                SetValue("Paths", "OUT", (value!=null) ? value : @".\OUT");
             }
         }
         public static string AFNDir
         {
             get
             {
-                return GetValue("Paths", "AFN_FILES", Path.GetFullPath(DEFAULT_DIR +"AFN_IN"));
+                return GetValue("Paths", "AFN_FILES", Path.GetFullPath(DefaultDir +"AFN_IN"));
             }
             set
             {
-                SetValue("Paths", "AFN_FILES", value);
+                SetValue("Paths", "AFN_FILES", value!=null ? value : @".\AFN_IN");
             }
         }
         public static string INVDir
         {
             get
             {
-                return GetValue("Paths", "TO_INV", Path.GetFullPath(DEFAULT_DIR +"TO_INV"));
+                return GetValue("Paths", "TO_INV", Path.GetFullPath(DefaultDir +"TO_INV"));
             }
             set
             {
-                SetValue("Paths", "TO_INV", value);
+                SetValue("Paths", "TO_INV", (value!=null) ? value : @".\ABS");
             }
         }
         public static string XSDDir
@@ -96,7 +96,7 @@ namespace cp365
             }
             set
             {
-                SetValue("Paths", "XSD", value);
+                SetValue("Paths", "XSD", (value!=null) ? value : @".\XSD");
             }
         }
         public static string PTKDatabase
@@ -107,7 +107,7 @@ namespace cp365
             }
             set
             {
-                SetValue("PTK", "Database", value);
+                SetValue("PTK", "Database", value!=null ? value : "etalon97.mdb");
             }
         }
         public static string ELODir
@@ -118,7 +118,7 @@ namespace cp365
             }
             set
             {
-                SetValue("PTK", "ELO Directory", value);
+                SetValue("PTK", "ELO Directory", (value != null) ? value : @".\ELO");
             }
         }
         //public static string PTKiniFile
@@ -140,7 +140,7 @@ namespace cp365
             }
             set
             {
-                SetValue("Bank", "BIK", value);
+                SetValue("Bank", "BIK", value!=null ? value : "047908700");
             }
         }
         public static string Filial
@@ -151,7 +151,7 @@ namespace cp365
             }
             set
             {
-                SetValue("Bank", "FilialNumber", value);
+                SetValue("Bank", "FilialNumber", (value!=null ) ? value : "0000");
             }
         }
         public static string TelOtpr
@@ -162,7 +162,7 @@ namespace cp365
             }
             set
             {
-                SetValue("Bank", "Phone", value);
+                SetValue("Bank", "Phone", value!=null ? value : "0");
             }
         }
         public static string DolOtpr
@@ -173,7 +173,7 @@ namespace cp365
             }
             set
             {
-                SetValue("Bank", "Sender State", value);
+                SetValue("Bank", "Sender State", value!=null ? value: "");
             }
         }
         public static string FamOtpr
@@ -184,7 +184,7 @@ namespace cp365
             }
             set
             {
-                SetValue("Bank", "Sender Family", value);
+                SetValue("Bank", "Sender Family", value!=null ? value : "");
             }
         }
         public static bool UsePTK
@@ -223,7 +223,7 @@ namespace cp365
             }
             set
             {
-                SetValue("Crypto", "Profile", value);
+                SetValue("Crypto", "Profile", value!=null ? value : "IAS");
             }
         }
         public static string FNSKey
@@ -234,7 +234,7 @@ namespace cp365
             }
             set
             {
-                SetValue("Crypto", "FNS key", value);
+                SetValue("Crypto", "FNS key", value!=null ? value : "");
             }
         }
 
@@ -254,13 +254,11 @@ namespace cp365
         {
             get
             {
-                //return Util.DateFromYMD(GetValue("NoModify", "Serial Date", ""));
                 string strToday = DateTime.Now.ToString("yyyyMMdd");
                 return GetValue("NoModify", "Serial Date", strToday);
             }
             set
             {
-                //SetValue("NoModify", "Serial Date", Util.DateToYMD(value));
                 SetValue("NoModify", "Serial Date", value);
             }
         }
@@ -309,7 +307,7 @@ namespace cp365
         private static string GetValue(string section, string key, string default_value) { 
             if(iniFile == null)
             {
-                iniFile = new IniFile(CONFIG_FILENAME);
+                iniFile = new IniFile(INIFileName);
             }
             if (iniFile.KeyExists(key, section))
                 return iniFile.Read(key, section).Trim();
@@ -321,13 +319,15 @@ namespace cp365
             int retValue = 0;
             if (iniFile == null)
             {
-                iniFile = new IniFile(CONFIG_FILENAME);
+                iniFile = new IniFile(INIFileName);
             }
             string value = GetValue(section, key, "0");
             try
             {
                 retValue = Convert.ToInt32(value);
+#pragma warning disable CA1031 // Не перехватывать исключения общих типов
             } catch
+#pragma warning restore CA1031 // Не перехватывать исключения общих типов
             {
                 retValue = default_value;
             }
@@ -339,7 +339,7 @@ namespace cp365
         {
             if (iniFile == null)
             {
-                iniFile = new IniFile(CONFIG_FILENAME);
+                iniFile = new IniFile(INIFileName);
             }
             iniFile.Write(key, value.Trim(), section);
         }
@@ -348,7 +348,7 @@ namespace cp365
         {
             if (iniFile == null)
             {
-                iniFile = new IniFile(CONFIG_FILENAME);
+                iniFile = new IniFile(INIFileName);
             }
             iniFile.Write(key, value.ToString(), section);
         }
@@ -364,25 +364,28 @@ namespace cp365
             // ниже спорно. Можно бы взять из Signature, но т.к. м.б. x32 и x64 гемор определять где находится spki1utl.exe
             // так что лучше скопировать spki1utl.exe в рабочий каталог.
             // В будущем переделаю
+/*            
             if (!File.Exists("spki1utl.exe"))
             {
                 MessageBox.Show("Нет файла spki1utl.exe");
                 return false;
             }
+*/
             // не очень. В конфиге исп-е imdisk м.б. указано позже
+/*
             if(Config.UseVirtualFDD && !File.Exists("imdisk.exe"))
             {
                 MessageBox.Show("Указано использование виртуального FDD\nНо нет файла IMDISK.EXE");
                 return false;
             }
-            
+*/            
             return true;
 
         }
 
         public static string ProgramVersion()
         {
-            return PROGRAM_NAME + " " + PROGRAM_VERSION;
+            return PrgName + " " + PrgVersion;
         }
 
     } // config  

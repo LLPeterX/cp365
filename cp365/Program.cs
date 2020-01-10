@@ -12,6 +12,7 @@ namespace cp365
         /// Главная точка входа для приложения.
         /// </summary>
         [STAThread]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Ликвидировать объекты перед потерей области", Justification = "<Ожидание>")]
         static void Main()
         {
             Application.EnableVisualStyles();

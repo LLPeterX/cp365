@@ -44,7 +44,7 @@ namespace cp365
             {
                 seqNumber = Convert.ToInt32(this.porNum.Text);
             }
-            catch
+            catch 
             {
                 MessageBox.Show("Неверный порядковый номер");
                 return;
@@ -64,6 +64,7 @@ namespace cp365
                 Config.SerialNum = seqNumber+ao.arjCount;
                 Config.SerialDate = Util.DateToYMD(DateTime.Now);
             }
+            ao.Dispose();
             this.Close();
         }
     }

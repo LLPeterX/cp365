@@ -7,9 +7,10 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 
+
 namespace cp365
 {
-    public class AFNInputProcessor
+    public class AFNInputProcessor : IDisposable
     {
         private string AFNname; // полный путь к файлу AFN
         private string shortAFNname; // короткое имя AFN
@@ -17,21 +18,21 @@ namespace cp365
         private FormMessage info;
 
         // конструктор
-        public AFNInputProcessor(string afn_name)
+        public AFNInputProcessor(string afnFileName)
         {
-            this.AFNname = afn_name;
-            this.shortAFNname = Path.GetFileName(afn_name).ToUpper();
+            this.AFNname = afnFileName;
+            this.shortAFNname = Path.GetFileName(afnFileName).ToUpper();
             this.tempDir = Config.TempDir;
             info = new FormMessage();
             info.Show();
         }
-        public bool Decrypt()
+        public bool Process()
         {
             // выбор файла AFNxxx.arj
             // надо ли снимать ЭЦП, если и так все прекрасно разархивируется?
             // разархивируем AFN
-            info.ShowTitle("Обработка " + AFNname);
-            info.ShowInfo("Распаковка...");
+            info.ShowTitle("Обработка " + Path.GetFileName(AFNname));
+            info.SetText("Распаковка...");
             info.SetProgressRanges(1);
             Util.CleanDirectory(Config.TempDir);
             Process ps = new Process();
@@ -42,34 +43,47 @@ namespace cp365
             ps.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             ps.Start();
             ps.WaitForExit();
+            ps.Dispose();
             // теперь в tempDir разархивированные файлы - *.vrb и *.xml
             // расшифровать *.vrb в .xml
-            info.ShowInfo("Инициализация Сигнатуры");
-            if (!Signature.Initialize())
+            info.SetText("Инициализация СКАД \"Сигнатура\"");
+            var (resCode, resString) = Signature.Initialize(Config.Profile, Config.UseVirtualFDD);
+            if (resCode != Signature.SUCCESS)
             {
+                MessageBox.Show(resString, "Ошибка инициализации", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Util.CleanDirectory(tempDir);
                 return false;
             }
             // получаем список зашифрованных файлов (у них расширение .vrb) и пробуем расшифровать  
-            info.ShowInfo("Расшифровка " + AFNname);
+            info.SetText("Расшифровка... ");
             string[] vrbFiles = Directory.GetFiles(tempDir, "*.vrb"); // в массиве - полные имена
+            info.SetProgressRanges(vrbFiles.Length);
             foreach (string fname in vrbFiles)
             {
-                if (Signature.Decrypt(fname) != 0)
+                (resCode, resString) = Signature.Decrypt(fname);
+                if (resCode != Signature.SUCCESS)
                 {
                     // Если ошибка - чистим TEMP и выходим
+                    MessageBox.Show(resString, "Ошибка расшифровки", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Util.CleanDirectory(tempDir);
                     return false;
                 }
+                info.UpdateProgress();
             }
             // На выходе после расшифровки получаем набор файлов *.xml
             // снятие ЭЦП с файлов *.xml
             string[] xmlFiles = Directory.GetFiles(tempDir, "*.xml");
             info.SetProgressRanges(xmlFiles.Length);
-            info.ShowInfo("Снятие ЭЦП...");
+            info.SetText("Снятие ЭЦП...");
             foreach (string fname in xmlFiles)
             {
-                Signature.DeleteSign(fname);
+                (resCode, resString) = Signature.DeleteSign(fname);
+                if(resCode != Signature.SUCCESS)
+                {
+                    MessageBox.Show(resString, "Ошибка Снятия ЭЦП", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Util.CleanDirectory(tempDir);
+                    return false;
+                }
                 info.UpdateProgress();
             }
             // копирование в каталог IN\YYYYMMDD
@@ -78,7 +92,7 @@ namespace cp365
             string strStat = GetStatistic(xmlFiles);
             bool makePB1 = Config.CreatePB1;
             string workDir = Config.WorkDir;
-            info.ShowInfo("Формирование PB");
+            info.SetText("Формирование PB");
             info.SetProgressRanges(xmlFiles.Length);
             foreach (string fname in xmlFiles) //fname = fullpath файла из каталога TEMP
             {
@@ -97,10 +111,12 @@ namespace cp365
             MessageBox.Show(strStat, shortAFNname, MessageBoxButtons.OK, MessageBoxIcon.Information);
             return true;
         }
-        // Сборка статистики: сколько файлов каких типов было в файле AFN. Тип - первым 3 буквам имени файла xml
-        public string GetStatistic(string[] fileNames)
+
+        // Сборка статистики: сколько файлов каких типов было в файле AFN. По первым 3 буквам имени файла xml
+        public static string GetStatistic(string[] fileNames)
         {
             Dictionary<String, Int32> stat = new Dictionary<String, Int32>();
+            if (fileNames == null || fileNames.Length == 0) return "(Пусто)";
             foreach (string xmlFileName in fileNames)
             {
                 string xmlFileID = Path.GetFileName(xmlFileName).ToUpper().Substring(0, 3);
@@ -120,11 +136,20 @@ namespace cp365
             }
             return sb.ToString();
         }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (info != null)
+                    info.Close();
+            }
+        }
 
         public void Dispose()
         {
-            if (info != null)
-                info.Close();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
     }
 }

@@ -60,10 +60,12 @@ namespace cp365
                     this.fileName = files[0];
                 }
             }
+#pragma warning disable CA1031 // Не перехватывать исключения общих типов
             catch
+#pragma warning restore CA1031 // Не перехватывать исключения общих типов
             {
                 this.fileName =  null;
-                this.mzErr = "Ошибка!";
+                this.mzErr = "Ошибка получения файла из MZ!";
                 this.valid = false;
             }
         }
@@ -81,7 +83,9 @@ namespace cp365
                 }
                 else result = false;
             }
+#pragma warning disable CA1031 // Не перехватывать исключения общих типов
             catch
+#pragma warning restore CA1031 // Не перехватывать исключения общих типов
             {
                 result = false;
             }

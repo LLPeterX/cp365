@@ -1,25 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
+//using System.Collections.Generic;
 using System.Text;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using Microsoft.Win32;
 
+
 namespace cp365
 {
     public static class Signature
     {
-        public const int OK = 0;
+        public const int SUCCESS = 0;
         public const int ERROR = 1;
-        private static bool use_virtual_fdd = Config.UseVirtualFDD;
-        public static bool isInitialized = false;
-        private const string SIG_PROGRAM = "spki1utl.exe";
+        private static bool use_virtual_fdd;
+        public static bool isInitialized { get; set; } = false;
+        //private const string SIG_PROGRAM = "spki1utl.exe";
+        private static string SIG_PROGRAM;
         private static string SIG_PROFILE;
         private static string profilesBaseDirectory = null;
-        //private const string HKLM_SIGNATURE64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\MDPREI\scsref\CurrentVersion";
-        //private const string HKLM_SIGNATURE32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\MDPREI\scs\CurrentVersion";
+        private const string HKLM_SIGNATURE64 = @"HKEY_LOCAL_MACHINE\SOFTWARE\MDPREI\scs\CurrentVersion";
+        private const string HKLM_SIGNATURE32 = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\MDPREI\scs\CurrentVersion";
         // см. в реестре значение InstallPath
 
         private const string HKCU_PROFILE = @"HKEY_CURRENT_USER\Software\MDPREI\spki\Profiles";
@@ -37,51 +39,59 @@ namespace cp365
         // 1) проверяем - есть ли A: ключи на нем
         //    если нет - монтируем ч/з imdisk образ "profile.IMG" на диск А:
         // 2) Проверяем наличие A:\vdkeys
-        static public bool Initialize()
+        static public (int, string) Initialize(string profile, bool virtualFDD=false)
         {
-            if (isInitialized) return true;
+            if (isInitialized) return (SUCCESS,null);
             // Тут может быть засада, если мы в конфиге меняем профиль или иные параметры+
             // Поэтому после конфига isInitialized = false
-            SIG_PROFILE = Config.Profile;
+            SIG_PROFILE = profile;
+            SIG_PROGRAM = LocateExecutable();
+            if(!File.Exists(SIG_PROGRAM)) {
+                return (ERROR, "Не могу найти spki1utl.exe");
+            }
+            use_virtual_fdd = virtualFDD;
             if (!CheckProfile(SIG_PROFILE))
-                return false;
+                return (ERROR,"Неверный профиль");
             // Проверяем, что вставлен/смонтирован правильный носитель
             if (!isVdkeysPresent())
             {
-                // поверяем imdisk
-                if (!File.Exists("imdisk.exe") && Config.UseVirtualFDD)
+                // если включено использование виртуального FDD,
+                // то монтируем его на A:
+                if (use_virtual_fdd)
                 {
-                    MessageBox.Show("Не найден файл imdisk.exe");
-                    return false;
+                    if (!File.Exists("imdisk.exe"))
+                    {
+                        return (ERROR, "Не найден файл imdisk.exe");
+                    }
+                    String imgFileName = SIG_PROFILE + ".img";
+                    if (!File.Exists(imgFileName))
+                    {
+                        return (ERROR, "Не найден файл " + imgFileName);
+                    }
+                    // запускаем imdisk
+                    Process ps = new Process();
+                    ps.StartInfo.FileName = "IMDISK.EXE";
+                    ps.StartInfo.Arguments = "-a -m A: -f " + imgFileName;
+                    ps.StartInfo.UseShellExecute = false;
+                    ps.Start();
+                    ps.WaitForExit();
+                    ps.Dispose();
                 }
-                String imgFileName = SIG_PROFILE + ".img";
-                if (!File.Exists(imgFileName))
-                {
-                    MessageBox.Show("Не найден файл " + imgFileName);
-                    return false;
-                }
-                // запускаем imdisk
-                Process ps = new Process();
-                ps.StartInfo.FileName = "IMDISK.EXE";
-                ps.StartInfo.Arguments = "-a -m A: -f " + imgFileName;
-                ps.StartInfo.UseShellExecute = false;
-                ps.Start();
-                ps.WaitForExit();
             }
+            // на этом месте у нас уже есть A: - либо реальный, либо образ
             // проверяем существование ключя в gdbm
             // Проверяем наличие A:\vdkeys
             if (isVdkeysPresent())
             {
                 isInitialized = true;
                 use_virtual_fdd = true;
-                return true;
+                return (SUCCESS,null);
             }
             else
             {
-                MessageBox.Show("Ошибка - на диске A: нет ключей");
                 isInitialized = false;
                 use_virtual_fdd = false;
-                return false;
+                return (ERROR, "Ошибка - на диске A: нет ключей");
             }
         }
         static public void Unload()
@@ -97,95 +107,75 @@ namespace cp365
                     ps.Start();
                     ps.WaitForExit();
                     use_virtual_fdd = false;
+                    ps.Dispose();
                 }
             }
+#pragma warning disable CA1031 // Не перехватывать исключения общих типов
             catch
+#pragma warning restore CA1031 // Не перехватывать исключения общих типов
             {
-                MessageBox.Show("Предупреждение: диск A: не отключен");
             } finally
             {
                 isInitialized = false;
             }
         }
 
-        static public int Sign(String file_name, out string result)
+        static public (int,string) Sign(String fileName)
         {
-            String signedName = file_name + ".sig";
-            String args = "-sign -profile " + SIG_PROFILE + " -registry -data " + file_name + " -out " + signedName;
-            ExecuteSpki(args, out result);
+            String signedName = fileName + ".sig";
+            String args = "-sign -profile " + SIG_PROFILE + " -registry -data " + fileName + " -out " + signedName;
+            string result = ExecuteSpki(args);
             // удаляем оригинальный файл и переименовываем signedName в file_name
-            if (!revertFile(file_name, signedName))
+            if (!revertFile(fileName, signedName))
             {
-                MessageBox.Show("Не удалось подписать файл " + file_name);
-                return ERROR;
+                return (ERROR, "Не удалось подписать файл " + fileName+"\n"+result);
             }
-            return OK;
+            return (SUCCESS, result) ;
         }
 
-        static public int Encrypt(String file_name, string key, out string result)
+        static public (int,string) Encrypt(String fileName, string key)
         {
-            String encryptedName = file_name + ".vrb";
-            String args = "-encrypt -profile " + SIG_PROFILE + " -registry -in " + file_name +
+            String encryptedName = fileName + ".vrb";
+            String args = "-encrypt -profile " + SIG_PROFILE + " -registry -in " + fileName +
                 " -out " + encryptedName + " -reckeyid "+key;
-            gzip(file_name);
-            ExecuteSpki(args, out result);
-            if (!revertFile(file_name, encryptedName))
+            gzip(fileName);
+            string result = ExecuteSpki(args);
+            if (!revertFile(fileName, encryptedName))
             {
-                MessageBox.Show("Не удалось зашифровать файл " + file_name);
-                return ERROR;
+                return (ERROR,result);
 
             }
-            return (OK);
+            return (SUCCESS,result);
         }
-        // модификация со ссылкой на ключ из конфига
-        static public int Encrypt(String file_name, out string result)
-        {
-            String encryptedName = file_name + ".vrb";
-            String args = "-encrypt -profile " + SIG_PROFILE + " -registry -in " + file_name +
-                " -out " + encryptedName + " -reckeyid " + Config.FNSKey;
-            gzip(file_name);
-            ExecuteSpki(args, out result);
-            if (!revertFile(file_name, encryptedName))
-            {
-                MessageBox.Show("Не удалось зашифровать файл " + file_name);
-                return ERROR;
-
-            }
-            return OK;
-        }
-
+     
         // расшифровка файла .vrb в .xml (дальнейшее преобразование будет далее)
         // 1) расшифроываем в .gz
         // 2) распаковываем .gz в .xml
-        static public int Decrypt(String file_name)
+        static public (int,string) Decrypt(String fileName)
         {
-            string new_name = file_name.ToUpper().Replace(".VRB", ".gz");
-            String args = "-decrypt -profile " + SIG_PROFILE + " -registry -in " + file_name + " -out " + new_name;
-            string result;
-            ExecuteSpki(args, out result);
+            string new_name = fileName.ToUpper().Replace(".VRB", ".gz");
+            String args = "-decrypt -profile " + SIG_PROFILE + " -registry -in " + fileName + " -out " + new_name;
+            string result = ExecuteSpki(args);
             if (IsSuccess(result))
             {
                 ungzip(new_name,".xml");
-                File.Delete(file_name);
-
-                return OK;
+                File.Delete(fileName);
+                return (SUCCESS, result);
             }
             else
             {
-                MessageBox.Show("Не удалось расшифровать файл\n" + file_name + "\nОшибка:\n" + result);
-                return ERROR;
+                return (ERROR,result);
             }
         }
 
         // снятие ЭЦП: сначала .xml->.dec, потом переименовать обратно
-        static public int DeleteSign(String srcFileName)
+        static public (int, string) DeleteSign(String srcFileName)
         {
             String dstFileName = srcFileName + ".dec";
             String args = "-verify -delete 1 -profile " + SIG_PROFILE + " -registry -in " + srcFileName + " -out " + dstFileName;
 
-            string result = null;
-            ExecuteSpki(args, out result);
-            return revertFile(srcFileName, dstFileName) ? OK : ERROR;
+            string result = ExecuteSpki(args);
+            return revertFile(srcFileName, dstFileName) ? (SUCCESS,result) : (ERROR,result);
 
         }
 
@@ -248,9 +238,9 @@ namespace cp365
         private static bool isVdkeysPresent() => Directory.Exists("A:\\vdkeys");
         
 
-        private static void ExecuteSpki(string arguments, out string result)
+        private static string ExecuteSpki(string arguments)
         {
-            result = null;
+            string result;
             Process ps = new Process();
             ps.StartInfo.FileName = SIG_PROGRAM; // spki1utl.exe
             ps.StartInfo.Arguments = arguments;
@@ -262,6 +252,8 @@ namespace cp365
             ps.Start();
             result = ps.StandardError.ReadToEnd();
             ps.WaitForExit();
+            ps.Dispose();
+            return result;
         }
 
         private static bool IsSuccess(string result)
@@ -307,9 +299,26 @@ namespace cp365
                 return false;
             }
         }
+
+        private static string LocateExecutable()
+        {
+            string pathToSpki = Registry.GetValue(HKLM_SIGNATURE32, "InstallPath", "").ToString();
+            if(String.IsNullOrEmpty(pathToSpki))
+            {
+                pathToSpki = Registry.GetValue(HKLM_SIGNATURE64, "InstallPath", "").ToString();
+            }
+            if (String.IsNullOrEmpty(pathToSpki)) // путь не найден
+            {
+                pathToSpki = AppDomain.CurrentDomain.BaseDirectory;
+                if (!pathToSpki.EndsWith("\\"))
+                    pathToSpki += "\\";
+            }
+            return pathToSpki + "spki1utl.exe";
+        }
        
 
     }
 
 
 }
+

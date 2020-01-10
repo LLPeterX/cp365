@@ -44,6 +44,7 @@ namespace cp365
         private string connectionString;
         public string errorMessage;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Не перехватывать исключения общих типов", Justification = "<Ожидание>")]
         public PTKPSD(string dbName)
         {
             try
@@ -101,8 +102,10 @@ namespace cp365
             return false;
         }
 
+
         //public List<MZFile> GetMzFiles(string dateFrom, string dateTo, out string errorMessage)
-         public List<MZFile> GetMzFiles(DateTime dateFrom, DateTime dateTo, out string errorMessage)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Не перехватывать исключения общих типов", Justification = "<Ожидание>")]
+        public List<MZFile> GetMzFiles(DateTime dateFrom, DateTime dateTo, out string errorMessage)
         {
 
             string sqlTemplate =
@@ -128,10 +131,12 @@ namespace cp365
                 {
                     connection.Open();
                     // Я не победил DateTime в параметрах, поэтому через строки
+#pragma warning disable CA2000 // Ликвидировать объекты перед потерей области
                     OleDbCommand cmd = new OleDbCommand(strSQL, connection);
-                    //OleDbCommand cmd = new OleDbCommand(sqlTemplate, connection);
-                    //cmd.Parameters.AddWithValue("@start", dateFrom);
-                    //cmd.Parameters.AddWithValue("@end", dateTo);
+#pragma warning restore CA2000 // Ликвидировать объекты перед потерей области
+                              //OleDbCommand cmd = new OleDbCommand(sqlTemplate, connection);
+                              //cmd.Parameters.AddWithValue("@start", dateFrom);
+                              //cmd.Parameters.AddWithValue("@end", dateTo);
                     using (OleDbDataReader reader = cmd.ExecuteReader())
                     {
                         while(reader.Read())

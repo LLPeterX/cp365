@@ -14,3 +14,5 @@ C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\Microsoft.Deployment.Compre
 C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.csproj.CopyComplete
 C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.FormSend.resources
 C:\Users\aswonder\source\repos\cp365\cp365\obj\Debug\cp365.FormMessage.resources
+C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\System.ValueTuple.dll
+C:\Users\aswonder\source\repos\cp365\cp365\bin\Debug\System.ValueTuple.xml

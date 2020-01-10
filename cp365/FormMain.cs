@@ -34,22 +34,26 @@ namespace cp365
             FormConfig fconfig = new FormConfig();
             fconfig.ShowDialog();
             EnableOrDisableMenuItems(); // почему эта хрень не выполняется?
+            fconfig.Dispose();
         }
 
         private void processAFN(object sender, EventArgs e)
         {
 
-            //DecryptAFN(null); // предполагается выбор файла вручную
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = Config.AFNDir;
-            dlg.Filter = "ARJ files (*.arj)|*.arj";
-            dlg.FilterIndex = 0;
-            dlg.RestoreDirectory = true;
+            OpenFileDialog dlg = new OpenFileDialog
+            {
+                InitialDirectory = Config.AFNDir,
+                Filter = "ARJ files (*.arj)|*.arj",
+                FilterIndex = 0,
+                RestoreDirectory = true
+            };
             if (dlg.ShowDialog() != DialogResult.OK)
                 return;
             // Может, писать в протокол?
             AFNInputProcessor ap = new AFNInputProcessor(dlg.FileName);
-            ap.Decrypt();
+            ap.Process();
+            ap.Dispose();
+            dlg.Dispose();
         }
 
         private void EnableOrDisableMenuItems()
@@ -61,6 +65,7 @@ namespace cp365
         {
             FormPTK ptkForm = new FormPTK();
             ptkForm.ShowDialog();
+            ptkForm.Dispose();
         }
 
         private void исходящиеToolStripMenuItem_Click(object sender, EventArgs e)
@@ -70,6 +75,7 @@ namespace cp365
                 return;
             FormSend fs = new FormSend();
             fs.ShowDialog();
+            fs.Dispose();
         }
     }
 }

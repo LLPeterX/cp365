@@ -31,50 +31,21 @@ namespace cp365
               this.pbFileName = "PB1" + "_" + this.sourceName+".xml";
             else
                 this.pbFileName = "PB2" + "_" + this.sourceName+"_"+this.filNumber+".xml";
-            /*
-            switch(type)
-            {
-                case PBTYPE.GOOD:
-                    xmlText = "<?xml version=\"1.0\" encoding=\"windows-1251\"?>"+
-       "<Файл ИдЭС=\""+Util.GUID()+"\" ТипИнф=\"ПОДБНПРИНТ\" ВерсПрог=\"cp365 1.0\""+
-       " ТелОтпр=\""+Config.TelOtpr+"\" ДолжнОтпр=\""+Config.DolOtpr+"\" ФамОтпр=\"" + Config.FamOtpr+"\" ВерсФорм=\""+Config.FORM_VERSION+
-       "\">"+
-       "<ПОДБНПРИНТ ИмяФайла=\""+srcFileName + "\" ДатаВремяПроверки = \"" + Util.XMLDate(DateTime.Now) + "\">" +
-       " <Результат КодРезПроверки=\"01\"/>" +
-       "</ПОДБНПРИНТ>" +
-       "</Файл>";
-                    break;
-                case PBTYPE.ERROR:
-                    xmlText = "<?xml version=\"1.0\" encoding=\"windows-1251\"?>" +
-       "<Файл ИдЭС=\"" + Util.GUID() + "\" ТипИнф=\"ПОДБНПРИНТ\" ВерсПрог=\""+Config.ProgramVersion()+
-       "\" ТелОтпр=\"" + Config.TelOtpr + "\" ДолжнОтпр=\"" + Config.DolOtpr + "\" ФамОтпр=\"" + Config.FamOtpr + "\" ВерсФорм=\"" + Config.FORM_VERSION +
-       "\">" +
-       "<ПОДБНПРИНТ ИмяФайла=\"" + srcFileName + "\" ДатаВремяПроверки = \"" + Util.XMLDate(DateTime.Now) + "\">" +
-       " <Результат КодРезПроверки=\""+errorCode+"\" Пояснение=\""+errorMessage+"\"/>" +
-       "</ПОДБНПРИНТ>" +
-       "</Файл>";
-                    break;
-
-            }
-            */
+            
             if (type == PBTYPE.SUCCESS)
-                this.xmlText = GetPBContent(srcFileName);
+                this.xmlText = GetPBContent();
             else
-                this.xmlText = GetPBContent(srcFileName, errorCode, errorMessage);
+                this.xmlText = GetPBContent(errorCode, errorMessage);
         }
-        override public string ToString()
-        {
-            return this.xmlText;
-        }
+        override public string ToString() => this.xmlText;
+        
 
         public void Save(String workdir)
         {
             string outFileName = workdir + "\\" + this.pbFileName;
             File.WriteAllText(outFileName, this.xmlText, Encoding.GetEncoding(1251));
         }
-
-        // вариант через XML
-        public string GetPBContent(string srcFileName, string errorCode = "01", string errorMessage = "У банка отозвана лицензия")
+        public string GetPBContent(string errorCode = "01", string errorMessage = "У банка отозвана лицензия")
         {
             XmlDocument xml = new XmlDocument();
             XmlDeclaration xmlDecl = xml.CreateXmlDeclaration("1.0", "windows-1251", null);
@@ -88,7 +59,7 @@ namespace cp365
             root.SetAttribute("ТелОтпр", Config.TelOtpr);
             root.SetAttribute("ДолжнОтпр", Config.DolOtpr);
             root.SetAttribute("ФамОтпр", Config.FamOtpr);
-            root.SetAttribute("ВерсФорм", Config.FORM_VERSION);
+            root.SetAttribute("ВерсФорм", Config.FormVersion);
             XmlElement body = xml.CreateElement("ПОДБНПРИНТ");
             root.AppendChild(body);
             body.SetAttribute("ИмяФайла", this.sourceName);
