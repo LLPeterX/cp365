@@ -7,6 +7,7 @@
 ARJ32,EXE
 *.XML
 *.html
+*.img
 /bin/Debug/*
 !/bin/Debug/311p.exe
 !/bin/Debug/arj32.exe

@@ -60,7 +60,7 @@ namespace cp365
         "WHERE(elo_arh_post.posttype = 'mz') AND (elo_arh_post.filetype = 'ИЭС2') "+
               //              " AND (elo_arh_post.dt BETWEEN #@1# AND #@2#) "+
               " AND (elo_arh_post.dt BETWEEN @start AND @end) " +
-              "ORDER BY elo_arh_post.dt";
+              "ORDER BY 2,1";
             // 0:filetype, 1:dt, 2:filename, 3:state, 4:stateText, 5: err, 6:err_text
             // даты в виде "#mm/dd/YYYY#"
             string strSQL = sqlTemplate.Replace("@start", "#"+Util.DateToSQL(dateFrom)+"#").Replace("@end", "#"+Util.DateToSQL(dateTo)+"#");

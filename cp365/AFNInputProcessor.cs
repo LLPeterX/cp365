@@ -91,6 +91,7 @@ namespace cp365
             string invDir = Config.INVDir;
             string strStat = GetStatistic(xmlFiles);
             bool makePB1 = Config.CreatePB1;
+            bool makePB2 = Config.CreatePB1 && Config.NoLicense;
             string workDir = Config.WorkDir;
             info.SetText("Формирование PB");
             info.SetProgressRanges(xmlFiles.Length);
@@ -104,6 +105,10 @@ namespace cp365
                 {
                     PB pb1 = new PB(fname, PBTYPE.SUCCESS);
                     pb1.Save(workDir);
+                }
+                if (makePB2 && CanAnswerPB2(justName.Substring(0, 3))) {
+                    PB pb2 = new PB(fname, PBTYPE.ERROR);
+                    pb2.Save(workDir);
                 }
                 info.UpdateProgress();
             }
@@ -135,6 +140,11 @@ namespace cp365
                 sb.Append("\n");
             }
             return sb.ToString();
+        }
+
+        private bool CanAnswerPB2(string fileID)
+        {
+            return (fileID=="RPO" || fileID=="ROO" || fileID=="TRB" || fileID=="TRG");
         }
         protected virtual void Dispose(bool disposing)
         {
