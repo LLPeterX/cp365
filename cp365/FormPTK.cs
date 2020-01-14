@@ -28,6 +28,7 @@ namespace cp365
         private void btnRenew_Click(object sender, EventArgs e)
         {
             FillDataGrid();
+            this.dataGrid.Focus();
         }
 
         private void btnExit_Click(object sender, EventArgs e)

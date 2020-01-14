@@ -20,7 +20,6 @@ namespace cp365
         public const string PrgName = "cp365";
         public const string PrgVersion = "1.0";
         public const string FormVersion = "3.00";
-        // private members
 
         public static string TempDir
         {
@@ -99,30 +98,6 @@ namespace cp365
                 SetValue("Paths", "XSD", (value!=null) ? value : @".\XSD");
             }
         }
-/*        public static string PTKDatabase
-        {
-            get
-            {
-                return GetValue("PTK", "Database", "");
-            }
-            set
-            {
-                SetValue("PTK", "Database", value!=null ? value : "etalon97.mdb");
-            }
-        }
-*/
-/*        public static string ELODir
-        {
-            get
-            {
-                return GetValue("PTK", "ELO Directory", "");
-            }
-            set
-            {
-                SetValue("PTK", "ELO Directory", (value != null) ? value : @".\ELO");
-            }
-        }
-*/     
         public static string PTKiniFile
        {
            get
@@ -359,24 +334,6 @@ namespace cp365
                 MessageBox.Show("Нет файла arj32.exe");
                 return false;
             }
-            // ниже спорно. Можно бы взять из Signature, но т.к. м.б. x32 и x64 гемор определять где находится spki1utl.exe
-            // так что лучше скопировать spki1utl.exe в рабочий каталог.
-            // В будущем переделаю
-/*            
-            if (!File.Exists("spki1utl.exe"))
-            {
-                MessageBox.Show("Нет файла spki1utl.exe");
-                return false;
-            }
-*/
-            // не очень. В конфиге исп-е imdisk м.б. указано позже
-/*
-            if(Config.UseVirtualFDD && !File.Exists("imdisk.exe"))
-            {
-                MessageBox.Show("Указано использование виртуального FDD\nНо нет файла IMDISK.EXE");
-                return false;
-            }
-*/            
             return true;
 
         }

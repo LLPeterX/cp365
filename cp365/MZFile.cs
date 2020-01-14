@@ -15,8 +15,8 @@ namespace cp365
         private string mzFullPath; // полное имя файла (PTK\TEMP\mz....)
         public string fileName; // имя файла внутри MZ
         public DateTime mzFileDate { get; set; } // дата создания mz
-        public string mzErr {get; set;}
-        public bool valid;
+        public string mzErr {get; set;} // сообщение об ошибке (если есть)
+        public bool valid; // файл правильный (существует, в нем есть AFN_MIFNS00*.ARJ)
         
 
         public string ArjName { 

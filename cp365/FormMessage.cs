@@ -12,14 +12,10 @@ namespace cp365
 {
     public partial class FormMessage : Form
     {
-        //private string title;
-        //private string text;
 
         public FormMessage()
         {
             InitializeComponent();
-            //Point p = new Point(FormMain.ActiveForm.Left + FormMain.ActiveForm.Width / 2 - this.Width / 2, FormMain.ActiveForm.Top + FormMain.ActiveForm.Height / 2 - this.Height / 2);
-            //this.Location = p;
         }
 
         public void SetText(string text)

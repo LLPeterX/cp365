@@ -142,10 +142,8 @@ namespace cp365
             return sb.ToString();
         }
 
-        private bool CanAnswerPB2(string fileID)
-        {
-            return (fileID=="RPO" || fileID=="ROO" || fileID=="TRB" || fileID=="TRG");
-        }
+        private bool CanAnswerPB2(string fileID) => (fileID == "RPO" || fileID == "ROO" || fileID == "TRB" || fileID == "TRG");
+       
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

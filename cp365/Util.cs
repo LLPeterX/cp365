@@ -32,9 +32,7 @@ namespace cp365
             }
         }
 
-#pragma warning disable CA1720 // Идентификатор содержит имя типа
-        public static string GUID() => Guid.NewGuid().ToString().ToUpper();
-#pragma warning restore CA1720 // Идентификатор содержит имя типа
+        public static string GetGUID() => Guid.NewGuid().ToString().ToUpper();
 
         public static string XMLDateTime(DateTime d) => d.ToString("s");
 

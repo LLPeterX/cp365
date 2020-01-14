@@ -53,7 +53,7 @@ namespace cp365
             XmlElement root = xml.CreateElement("Файл");
             xml.AppendChild(root);
             //root.GetAttribute("xmlns", "urn:cbr-365Р:stop: v.3.00"); // это не используется, убрано в 440-П
-            root.SetAttribute("ИдЭС", Util.GUID());
+            root.SetAttribute("ИдЭС", Util.GetGUID());
             root.SetAttribute("ТипИнф", "ПОДБНПРИНТ");
             root.SetAttribute("ВерсПрог", Config.ProgramVersion());
             root.SetAttribute("ТелОтпр", Config.TelOtpr);

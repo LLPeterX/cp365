@@ -36,8 +36,7 @@ namespace cp365
                     throw new Exception("Неверный файл " + iniFileName);
                 
                 //this.connectionString = "Provider = Microsoft.Jet.OLEDB.4.0; DSN = " + this.ODBC_DSN+ ";User Id=admin;Password=;";
-                //this.connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="+dbPath+
-                    //";User Id=admin;Password=;";
+                //this.connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="+dbPath+";User Id=admin;Password=;";
                 this.connectionString = "DSN=" + this.ODBC_DSN;
             } catch (Exception e)
             {
