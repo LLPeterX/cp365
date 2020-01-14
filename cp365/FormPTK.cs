@@ -16,12 +16,7 @@ namespace cp365
         public FormPTK()
         {
             InitializeComponent();
-            ptk = new PTKPSD(Config.PTKDatabase);
-            if(ptk.eloDir==null)
-            {
-                MessageBox.Show("Не удалось получить доступ к ПТК ПСД\n" + ptk.errorMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            ptk = new PTKPSD(Config.PTKiniFile);
             // ниже в датах заменяем время на 00:00:00 или 23:59:00
             this.dateFrom.Value = CreateDate(DateTime.Now, true); 
             this.dateTo.Value = CreateDate(DateTime.Now, false);
@@ -96,16 +91,18 @@ namespace cp365
 
             string errorMessage = null;
             List<MZFile> data = ptk.GetMzFiles(dateFrom.Value, dateTo.Value, out errorMessage);
+            if (data == null || !String.IsNullOrEmpty(errorMessage))
+            {
+                MessageBox.Show(errorMessage, "Ошибка заполнения таблицы", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             this.dataGrid.DataSource = data;
             this.dataGrid.Columns["mzName"].HeaderText = "Файл ПТК";
             this.dataGrid.Columns["mzFileDate"].HeaderText = "Дата";
             this.dataGrid.Columns["mzErr"].HeaderText = "Ошибка";
             this.dataGrid.Columns["ArjName"].HeaderText = "Имя файла ФНС";
             this.dataGrid.AutoResizeColumns();
-            if(!String.IsNullOrEmpty(errorMessage))
-            {
-                MessageBox.Show(errorMessage, "Ошибка заполнения таблицы",MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            
         }
 
         private void dataGrid_SelectionChanged(object sender, EventArgs e)
@@ -147,6 +144,16 @@ namespace cp365
         0,
         0,
         dt.Kind);
+            }
+        }
+
+        private void dateTo_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == 'c' || e.KeyChar=='C')
+            {
+                DateTime dtNew = this.dateFrom.Value;
+                dtNew = CreateDate(dtNew, false);
+                this.dateTo.Value = dtNew;
             }
         }
     }

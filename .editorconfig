@@ -41,3 +41,6 @@ dotnet_diagnostic.CA1060.severity = none
 
 # CA1806: Не игнорируйте результаты метода
 dotnet_diagnostic.CA1806.severity = none
+
+# CA2241: Задайте правильные аргументы для методов форматирования
+dotnet_diagnostic.CA2241.severity = none

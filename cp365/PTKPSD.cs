@@ -7,104 +7,46 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography.Pkcs;
 
 
 namespace cp365
 {
-    /*
-     *  Класс для работы с файлом etalon97.mdb из ПТК ПСД
-     *  Connection:
-     *  Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\ptk\Database\etalon97.mdb
-     *  Нас интересует только табица elo_arh_post
-     *  и файлы из Post\ELO\ (путь берется селектом из ПТК ПСД)
-     *  Внимание! заключительный слэш!
-     *  
-     *  выборка посылок mz за диапазон:
-     *  SELECT     filetype, posttype, dt, filename, pathname, state_, bik, error_, repdate, nkod
-           FROM         elo_arh_post
-           WHERE     (posttype = 'mz') AND (dt BETWEEN #12/24/2019# AND #12/27/2019#)
-
-      * Точнее:
-      
-       SELECT     elo_arh_post.filetype, elo_arh_post.posttype, elo_arh_post.dt, elo_arh_post.filename, elo_arh_post.state_, elo_spr_state.name_st, elo_arh_post.bik, 
-                      elo_arh_post.error_, elo_spr_err.ErrText, elo_arh_post.nkod
-        FROM         ((elo_arh_post INNER JOIN
-                      elo_spr_err ON elo_arh_post.error_ = elo_spr_err.ErrCod) INNER JOIN
-                      elo_spr_state ON elo_arh_post.state_ = elo_spr_state.kot_st)
-        WHERE     (elo_arh_post.posttype = 'mz') AND (elo_arh_post.dt BETWEEN #12/24/2019# AND #12/27/2019#)
-
-        Параметры запроса см. https://stackoverflow.com/questions/37883432/select-data-from-ms-access-database-by-date-in-c-sharp
-        Но мы будем юзать тормозной ODBC, созданный для ПТК ПСД
-     */
+   
     class PTKPSD
     {
-        //private string archPostDir; // не подходит, т.к. файлы зашифрованы ключом ПТК, к которому нет доступа
-        public string eloDir;
-        private string dbPath;
-        private string connectionString;
         public string errorMessage;
+        // файлы из INI
+        private string ODBC_DSN; // имя ODBC
+        private string tmpDir;
+        private string archPostDir; // Post\Store\
+        // other private members
+        private string connectionString;
+        private IniFile ini;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Не перехватывать исключения общих типов", Justification = "<Ожидание>")]
-        public PTKPSD(string dbName)
+        public PTKPSD(string iniFileName)
         {
             try
             {
-                //this.connectionString = "Provider = Microsoft.Jet.OLEDB.4.0; DSN = " + this.DSN+ ";User Id=admin;Password=;";
-                this.dbPath = dbName;
-                this.connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="+dbPath+
-                    ";User Id=admin;Password=;";
-                //this.connectionString = "DSN=" + this.DSN;
-                //this.tmpDir = iniFile.Read("TMP", "Path");
-                //this.outPostDir = iniFile.Read("OUTPOST", "Path");
-                this.eloDir = GetELODir();
+                ini = new IniFile(iniFileName);
+                this.ODBC_DSN = ini.Read("ODBC", "DataBase");
+                this.tmpDir = ini.Read("TMP", "Path");
+                this.archPostDir = ini.Read("ARCHIVESTORE", "Path");
+                if (String.IsNullOrEmpty(ODBC_DSN) || String.IsNullOrEmpty(tmpDir) || String.IsNullOrEmpty(archPostDir))
+                    throw new Exception("Неверный файл " + iniFileName);
+                
+                //this.connectionString = "Provider = Microsoft.Jet.OLEDB.4.0; DSN = " + this.ODBC_DSN+ ";User Id=admin;Password=;";
+                //this.connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="+dbPath+
+                    //";User Id=admin;Password=;";
+                this.connectionString = "DSN=" + this.ODBC_DSN;
             } catch (Exception e)
             {
-                this.eloDir = null;
                 this.errorMessage = e.Message;
             }
 
         }
 
-        // В ELO только входящие файлы - они нас и интересуют
-        private string GetELODir()
-        {
-            /*string strSQL = "SELECT path_out FROM elo_path WHERE (ecp='check')";
-            try
-            {
-                using (OleDbConnection connection = new OleDbConnection(connectionString))
-                {
-                    connection.Open();
-                    OleDbCommand cmd = new OleDbCommand(strSQL, connection);
-                    using (OleDbDataReader reader = cmd.ExecuteReader())
-                    {
-                        reader.Read();
-                        //return reader[0].ToString();
-                        return reader[0].ToString().Replace("N:", "C:"); // for local testing
-                    }
-                }
-            } catch (Exception e)
-            {
-                this.errorMessage = e.Message;
-                return null;
-            }*/
-            return Config.ELODir;
-        }
 
-        // Проврерка, что экземпляр создан успешно
-        public bool IsSuccess(out string errorMsg)
-        {
-            if(this.eloDir != null)
-            {
-                errorMsg = null;
-                return true;
-            }
-            errorMsg = this.errorMessage;
-            return false;
-        }
-
-
-        //public List<MZFile> GetMzFiles(string dateFrom, string dateTo, out string errorMessage)
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Не перехватывать исключения общих типов", Justification = "<Ожидание>")]
         public List<MZFile> GetMzFiles(DateTime dateFrom, DateTime dateTo, out string errorMessage)
         {
 
@@ -127,27 +69,25 @@ namespace cp365
             // надо вывести: mzName, fileName, дата/время
             try
             {
-                using (OleDbConnection connection = new OleDbConnection(connectionString))
+                using (OdbcConnection connection = new OdbcConnection(connectionString))
                 {
                     connection.Open();
                     // Я не победил DateTime в параметрах, поэтому через строки
 #pragma warning disable CA2000 // Ликвидировать объекты перед потерей области
-                    OleDbCommand cmd = new OleDbCommand(strSQL, connection);
+                    OdbcCommand cmd = new OdbcCommand(strSQL, connection);
 #pragma warning restore CA2000 // Ликвидировать объекты перед потерей области
-                              //OleDbCommand cmd = new OleDbCommand(sqlTemplate, connection);
-                              //cmd.Parameters.AddWithValue("@start", dateFrom);
-                              //cmd.Parameters.AddWithValue("@end", dateTo);
-                    using (OleDbDataReader reader = cmd.ExecuteReader())
+                    using (OdbcDataReader reader = cmd.ExecuteReader())
                     {
                         while(reader.Read())
                         {
-                            string mzfile = reader["filename"].ToString();
-                            string fullPath = eloDir + "\\"+mzfile.Substring(0, 12); // с расширением, но отбрасываем лишнее расширение
-                            MZFile mz = new MZFile(fullPath);
+                            string mzfile = reader["filename"].ToString(); // полное имя файла mz (напр. "mzr01_08.700.100111")
+                            DateTime mzDate = (DateTime)reader["dt"];
+                            string mzDecodedName = DecodeMZ(mzfile, mzDate); // may be null
+                            MZFile mz = new MZFile(mzDecodedName);
                             if(mz!=null)
                             {
                                 string err = null;
-                                if (!File.Exists(fullPath))
+                                if (!File.Exists(mzDecodedName))
                                 {
                                     err = "Не найден";
                                 }
@@ -159,7 +99,7 @@ namespace cp365
                                         mz.valid = false;
                                     }
                                 }
-                                mz.mzFileDate = (DateTime)reader["dt"];
+                                mz.mzFileDate = mzDate;
                                 mz.mzErr = err;
                                 result.Add(mz);
                             } else
@@ -177,6 +117,22 @@ namespace cp365
                 errorMessage += e.Message;
                 return null;
             }
+        }
+
+        // Снять ЭЦП с файла и поместить его в каталог TEMP ПТК ПСД
+        private string DecodeMZ(string fileName, DateTime fileDate)
+        {
+            //string subdir = string.Format("%4d\\%02d\\%02d", dt.Year, dt.Month, dt.Day); // YYYY\MM\DD
+            string subdir = string.Format("{0}\\{1:D2}\\{2:D2}\\", fileDate.Year, fileDate.Month, fileDate.Day); // YYYY\MM\DD\
+            string fullInPath = this.archPostDir + subdir + fileName;
+            string outName = this.tmpDir + fileName.Substring(0, 12);
+            if (!File.Exists(fullInPath))
+                return null;
+            byte[] fileContent = File.ReadAllBytes(fullInPath);
+            SignedCms cms = new SignedCms();
+            cms.Decode(fileContent);
+            File.WriteAllBytes(outName, cms.ContentInfo.Content);
+            return outName;
         }
     }
 }

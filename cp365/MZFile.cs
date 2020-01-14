@@ -11,8 +11,8 @@ namespace cp365
 {
     class MZFile
     {
-        public string mzName { get; } // имя файла MZ
-        private string mzFullPath; // полное имя файла
+        public string mzName { get; } // корткое имя файла MZ
+        private string mzFullPath; // полное имя файла (PTK\TEMP\mz....)
         public string fileName; // имя файла внутри MZ
         public DateTime mzFileDate { get; set; } // дата создания mz
         public string mzErr {get; set;}
@@ -30,6 +30,14 @@ namespace cp365
         public MZFile(string mz_path)
         {
             this.mzFullPath = mz_path;
+            if(mz_path == null)
+            {
+                this.mzErr = "Не найден";
+                this.mzName = "";
+                this.fileName = "";
+                this.valid = false;
+
+            }
             this.mzName = Path.GetFileName(this.mzFullPath).ToLower();
             getFileInCAB(); // получить значение fileName в CAB-архиве
             if(!FileExists())

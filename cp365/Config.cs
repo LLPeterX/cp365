@@ -99,7 +99,7 @@ namespace cp365
                 SetValue("Paths", "XSD", (value!=null) ? value : @".\XSD");
             }
         }
-        public static string PTKDatabase
+/*        public static string PTKDatabase
         {
             get
             {
@@ -110,7 +110,8 @@ namespace cp365
                 SetValue("PTK", "Database", value!=null ? value : "etalon97.mdb");
             }
         }
-        public static string ELODir
+*/
+/*        public static string ELODir
         {
             get
             {
@@ -121,17 +122,18 @@ namespace cp365
                 SetValue("PTK", "ELO Directory", (value != null) ? value : @".\ELO");
             }
         }
-        //public static string PTKiniFile
-        //{
-        //    get
-        //    {
-        //        return GetValue("PTK", "INI file", "");
-        //    }
-        //    set
-        //    {
-        //        SetValue("PTK", "INI file", value);
-        //    }
-        //}
+*/     
+        public static string PTKiniFile
+       {
+           get
+           {
+               return GetValue("PTK", "INI file", "");
+           }
+           set
+          {
+              SetValue("PTK", "INI file", value);
+           }
+       }
         public static string BIK
         {
             get
@@ -151,7 +153,7 @@ namespace cp365
             }
             set
             {
-                SetValue("Bank", "FilialNumber", (value!=null ) ? value : "0000");
+                SetValue("Bank", "FilialNumber", value);
             }
         }
         public static string TelOtpr
@@ -191,15 +193,11 @@ namespace cp365
         {
             get
             {
-                if (!File.Exists(PTKDatabase))
-                    return false;
-                if (GetValue("PTK", "UsePTK", "0") == "0")
-                    return false;
-                return true;
+                return (GetValue("PTK", "UsePTK", "0") == "1");
             }
             set
             {
-                SetValue("PTK", "UsePTK", value && File.Exists(PTKDatabase) ? "1" : "0");
+                SetValue("PTK", "UsePTK", value ? "1" : "0");
             }
         }
         public static bool UseVirtualFDD

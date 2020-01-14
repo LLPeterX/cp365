@@ -44,7 +44,7 @@
             this.outdir = new System.Windows.Forms.TextBox();
             this.invdir = new System.Windows.Forms.TextBox();
             this.xsddir = new System.Windows.Forms.TextBox();
-            this.ptkdb = new System.Windows.Forms.TextBox();
+            this.ptkini = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.bik = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -70,8 +70,6 @@
             this.family = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.tel = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.eloDir = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -152,9 +150,9 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(30, 254);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(117, 13);
+            this.label9.Size = new System.Drawing.Size(101, 13);
             this.label9.TabIndex = 8;
-            this.label9.Text = "Файл базы ПТК ПСД";
+            this.label9.Text = "Файл ini ПТК ПСД";
             // 
             // workdir
             // 
@@ -206,12 +204,12 @@
             this.xsddir.Size = new System.Drawing.Size(424, 20);
             this.xsddir.TabIndex = 15;
             // 
-            // ptkdb
+            // ptkini
             // 
-            this.ptkdb.Location = new System.Drawing.Point(156, 247);
-            this.ptkdb.Name = "ptkdb";
-            this.ptkdb.Size = new System.Drawing.Size(424, 20);
-            this.ptkdb.TabIndex = 16;
+            this.ptkini.Location = new System.Drawing.Point(156, 250);
+            this.ptkini.Name = "ptkini";
+            this.ptkini.Size = new System.Drawing.Size(424, 20);
+            this.ptkini.TabIndex = 16;
             // 
             // label10
             // 
@@ -435,30 +433,12 @@
             this.tel.Size = new System.Drawing.Size(123, 20);
             this.tel.TabIndex = 41;
             // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(31, 279);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(120, 13);
-            this.label19.TabIndex = 42;
-            this.label19.Text = "Каталог посылок ПТК";
-            // 
-            // eloDir
-            // 
-            this.eloDir.Location = new System.Drawing.Point(156, 274);
-            this.eloDir.Name = "eloDir";
-            this.eloDir.Size = new System.Drawing.Size(424, 20);
-            this.eloDir.TabIndex = 43;
-            // 
             // FormConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.eloDir);
-            this.Controls.Add(this.label19);
             this.Controls.Add(this.tel);
             this.Controls.Add(this.label18);
             this.Controls.Add(this.family);
@@ -484,7 +464,7 @@
             this.Controls.Add(this.label11);
             this.Controls.Add(this.bik);
             this.Controls.Add(this.label10);
-            this.Controls.Add(this.ptkdb);
+            this.Controls.Add(this.ptkini);
             this.Controls.Add(this.xsddir);
             this.Controls.Add(this.invdir);
             this.Controls.Add(this.outdir);
@@ -528,7 +508,7 @@
         private System.Windows.Forms.TextBox outdir;
         private System.Windows.Forms.TextBox invdir;
         private System.Windows.Forms.TextBox xsddir;
-        private System.Windows.Forms.TextBox ptkdb;
+        private System.Windows.Forms.TextBox ptkini;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox bik;
         private System.Windows.Forms.Label label11;
@@ -554,7 +534,5 @@
         private System.Windows.Forms.TextBox family;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox tel;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.TextBox eloDir;
     }
 }

@@ -94,6 +94,7 @@
             this.dateTo.Size = new System.Drawing.Size(80, 20);
             this.dateTo.TabIndex = 4;
             this.dateTo.ValueChanged += new System.EventHandler(this.dateTo_ValueChanged);
+            this.dateTo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dateTo_KeyPress);
             // 
             // btnRenew
             // 

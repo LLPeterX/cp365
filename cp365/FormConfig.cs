@@ -24,7 +24,7 @@ namespace cp365
             this.invdir.Text = Config.INVDir;
             this.xsddir.Text = Config.XSDDir;
             //this.ptkdb.Text = Config.PTKiniFile;
-            this.ptkdb.Text = Config.PTKDatabase;
+            this.ptkini.Text = Config.PTKiniFile;
             this.bik.Text = Config.BIK;
             this.fil.Text = Config.Filial;
             this.profile.Text = Config.Profile;
@@ -39,7 +39,6 @@ namespace cp365
             this.dolgn.Text = Config.DolOtpr;
             this.family.Text = Config.FamOtpr;
             this.tel.Text = Config.TelOtpr;
-            this.eloDir.Text = Config.ELODir;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
@@ -62,12 +61,12 @@ namespace cp365
             else return;
             Config.INVDir = this.invdir.Text; // может быть пустой - тогда не копировать
             Config.XSDDir = this.xsddir.Text; // может быть пустой - тогда не проверять
-            if (File.Exists(this.ptkdb.Text))
-                Config.PTKDatabase = this.ptkdb.Text; // может быть пустой - тогда без ПТК ПСД
+            if (File.Exists(this.ptkini.Text))
+                Config.PTKiniFile = this.ptkini.Text; // может быть пустой - тогда без ПТК ПСД
             else
             {
-                warnings += "Файла " + this.ptkdb.Text + "не существует\n";
-                Config.PTKDatabase = "";
+                warnings += "Файла " + this.ptkini.Text + "не существует\n";
+                Config.PTKiniFile = null;
                 Config.UsePTK = false;
             }
             if (this.bik.Text.Length != 9 || !this.bik.Text.StartsWith("04"))
@@ -123,9 +122,9 @@ namespace cp365
             }
             if (this.usePTK.Checked)
             {
-                if (!File.Exists(this.ptkdb.Text))
+                if (!File.Exists(this.ptkini.Text))
                 {
-                    warnings += "\nНе найден файл " + this.ptkdb.Text + "\nИспользование ПТК ПСД отключено\n";
+                    warnings += "\nНе найден файл " + this.ptkini.Text + "\nИспользование ПТК ПСД отключено\n";
                     //MessageBox.Show("Включено использвание ПТК ПСД\nно отсутствует файл "+ this.ptkini.Text+"\n"+
                     //    "Использование ПДК ПСД отключено", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     Config.UsePTK = false;
@@ -151,12 +150,6 @@ namespace cp365
             Config.TelOtpr = this.tel.Text;
             Config.DolOtpr = this.dolgn.Text;
             Config.FamOtpr = this.family.Text;
-            if (!Directory.Exists(this.eloDir.Text))
-            {
-                MessageBox.Show("Неверный каталог посылок ПТК ПСД");
-                return;
-            }
-            Config.ELODir = this.eloDir.Text.Trim();
             if (warnings.Length > 2)
                 MessageBox.Show(warnings, "Ошибки кофигурации", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             Signature.isInitialized = false;
