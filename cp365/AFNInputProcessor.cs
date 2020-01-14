@@ -101,13 +101,15 @@ namespace cp365
                 string outName = invDir + "\\" + justName;
                 if (Directory.Exists(invDir) && justName.Substring(0, 3) != "KWT")
                     File.Copy(fname, outName, true);
-                if (makePB1 && justName.Substring(0, 3) != "KWT")
+                string fileID = justName.Substring(0, 3);
+                if (makePB1 && fileID != "KWT")
                 {
                     PB pb1 = new PB(fname, PBTYPE.SUCCESS);
                     pb1.Save(workDir);
                 }
-                if (makePB2 && CanAnswerPB2(justName.Substring(0, 3))) {
-                    PB pb2 = new PB(fname, PBTYPE.ERROR);
+                //if (makePB2 && CanAnswerPB2(justName.Substring(0, 3))) {
+                if(makePB2 && (fileID == "RPO" || fileID == "ROO" || fileID == "TRB" || fileID == "TRG")) { 
+                    PB pb2 = new PB(fname, PBTYPE.ERROR, "72");
                     pb2.Save(workDir);
                 }
                 info.UpdateProgress();
@@ -142,8 +144,7 @@ namespace cp365
             return sb.ToString();
         }
 
-        private bool CanAnswerPB2(string fileID) => (fileID == "RPO" || fileID == "ROO" || fileID == "TRB" || fileID == "TRG");
-       
+      
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
