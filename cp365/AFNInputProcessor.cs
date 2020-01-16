@@ -28,10 +28,8 @@ namespace cp365
         }
         public bool Process()
         {
-            // выбор файла AFNxxx.arj
-            // надо ли снимать ЭЦП, если и так все прекрасно разархивируется?
-            // разархивируем AFN
-            info.ShowTitle("Обработка " + Path.GetFileName(AFNname));
+            // с ARJ не снимаем ЭЦП, т.к. и так прекрасно разархивируется
+            info.SetTitle(Path.GetFileName(AFNname));
             info.SetText("Распаковка...");
             info.SetProgressRanges(1);
             Util.CleanDirectory(Config.TempDir);

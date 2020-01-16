@@ -24,7 +24,7 @@ namespace cp365
             this.Refresh();
         }
 
-        public void ShowTitle(string text)
+        public void SetTitle(string text)
         {
             this.Text = text;
             this.Refresh();

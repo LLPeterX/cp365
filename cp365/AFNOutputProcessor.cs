@@ -22,7 +22,7 @@ namespace cp365
             this.arjNumber = porNo; // начальный N архива
             this.arjFilesCount = 1; // кол-во сформированных ARJ-файлов
             info = new FormMessage();
-            info.ShowTitle("Подготовка файлов");
+            info.SetTitle("Подготовка файлов");
             info.Show();
         }
 

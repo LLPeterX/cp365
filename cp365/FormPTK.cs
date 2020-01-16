@@ -83,7 +83,6 @@ namespace cp365
 
         private void FormPTK_Load(object sender, EventArgs e)
         {
-            // загрузить файлы
             FillDataGrid();
         }
 
@@ -114,12 +113,13 @@ namespace cp365
 
         private void dateFrom_ValueChanged(object sender, EventArgs e)
         {
-            // изменить время на 00:00:00
+            // изменить время в дате на 00:00:00
             this.dateFrom.Value.Add(new TimeSpan(0, 0, 0));
         }
 
         private void dateTo_ValueChanged(object sender, EventArgs e)
         {
+            // изменить время в дате на 23:590:00
             this.dateFrom.Value.Add(new TimeSpan(23, 59, 0));
         }
 

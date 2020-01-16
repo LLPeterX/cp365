@@ -82,13 +82,13 @@ namespace cp365
                             string mzfile = reader["filename"].ToString(); // полное имя файла mz (напр. "mzr01_08.700.100111")
                             DateTime mzDate = (DateTime)reader["dt"];
                             string mzDecodedName = DecodeMZ(mzfile, mzDate); // may be null
-                            MZFile mz = new MZFile(mzDecodedName);
-                            if(mz!=null)
+                            if(mzDecodedName != null)
                             {
+                                MZFile mz = new MZFile(mzDecodedName);
                                 string err = null;
                                 if (!File.Exists(mzDecodedName))
                                 {
-                                    err = "Не найден";
+                                    err = mzDecodedName + " Не найден";
                                 }
                                 else
                                 {
@@ -121,17 +121,21 @@ namespace cp365
         // Снять ЭЦП с файла и поместить его в каталог TEMP ПТК ПСД
         private string DecodeMZ(string fileName, DateTime fileDate)
         {
-            //string subdir = string.Format("%4d\\%02d\\%02d", dt.Year, dt.Month, dt.Day); // YYYY\MM\DD
-            string subdir = string.Format("{0}\\{1:D2}\\{2:D2}\\", fileDate.Year, fileDate.Month, fileDate.Day); // YYYY\MM\DD\
-            string fullInPath = this.archPostDir + subdir + fileName;
-            string outName = this.tmpDir + fileName.Substring(0, 12);
-            if (!File.Exists(fullInPath))
+            try {
+                string subdir = string.Format("{0}\\{1:D2}\\{2:D2}\\", fileDate.Year, fileDate.Month, fileDate.Day); // YYYY\MM\DD\
+                string fullInPath = this.archPostDir + subdir + fileName;
+                string outName = this.tmpDir + fileName.Substring(0, 12);
+                if (!File.Exists(fullInPath))
+                    return null;
+                byte[] fileContent = File.ReadAllBytes(fullInPath);
+                SignedCms cms = new SignedCms();
+                cms.Decode(fileContent);
+                File.WriteAllBytes(outName, cms.ContentInfo.Content);
+                return outName;
+            } catch
+            {
                 return null;
-            byte[] fileContent = File.ReadAllBytes(fullInPath);
-            SignedCms cms = new SignedCms();
-            cms.Decode(fileContent);
-            File.WriteAllBytes(outName, cms.ContentInfo.Content);
-            return outName;
+            }
         }
     }
 }
