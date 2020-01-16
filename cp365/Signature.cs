@@ -34,11 +34,17 @@ namespace cp365
          *  store/0 (1  т.п.)Ж
          *    store/
         */
-
-        // Инициализация СКАД "Сигнатура"
-        // 1) проверяем - есть ли A: ключи на нем
-        //    если нет - монтируем ч/з imdisk образ "profile.IMG" на диск А:
-        // 2) Проверяем наличие A:\vdkeys
+        /// <summary>
+        /// Инициализация СКАД "Сигнатура"
+        /// 1) Профиль должен быть создан утилитой конфигурации СКЗИ
+        /// 2) Если определено использование виртуального FDD, то должен быть установлен imdisk, а imdisk.exe д.б. в текущем каталоге программы
+        ///    а также наличие файла {profile_name}.img
+        /// 3) Предполагается СКАД "Сигнатура" x86 (а не x64)
+        /// 4) Проверить наличие профиля (т.е. каталога с local.gdbm и local.pse)
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <param name="virtualFDD"></param>
+        /// <returns></returns>
         static public (int, string) Initialize(string profile, bool virtualFDD=false)
         {
             if (isInitialized) return (SUCCESS,null);
@@ -132,7 +138,15 @@ namespace cp365
             }
             return (SUCCESS, result) ;
         }
-
+        /// <summary>
+        /// Шифрование файла.
+        ///   fileName - полный путь к файлу
+        ///   key - ключ шифрования (12-значный)
+        /// Результирующий зашифрованный файл будет с расширением .vrb; исходный .xml удаляется  
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         static public (int,string) Encrypt(String fileName, string key)
         {
             String encryptedName = fileName + ".vrb";
@@ -140,12 +154,19 @@ namespace cp365
                 " -out " + encryptedName + " -reckeyid "+key;
             gzip(fileName);
             string result = ExecuteSpki(args);
-            if (!revertFile(fileName, encryptedName))
-            {
-                return (ERROR,result);
+            /*            if (!revertFile(fileName, encryptedName))
+                        {
+                            return (ERROR,result);
 
+                        }
+                        return (SUCCESS,result);
+            */
+            if (File.Exists(encryptedName))
+            {
+                File.Delete(fileName);
+                return (SUCCESS, null);
             }
-            return (SUCCESS,result);
+            return (ERROR, "Ошибка шифрования " + Path.GetFileName(fileName));
         }
      
         // расшифровка файла .vrb в .xml (дальнейшее преобразование будет далее)

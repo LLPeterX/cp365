@@ -94,7 +94,7 @@ namespace cp365
                 return;
             // теперь в WORK у нас смесь .xml и .vrb
             // их надо упаковать в arj и поместить файлы в OUT
-            // файлы скидываем в files.lst и списском фрхивируем
+            // файлы скидываем в files.lst и списком архивируем
             string outDir = Config.OutDir;
             errorMessage = "";
             string[] arjBkp = new string[arjFilesCount];
