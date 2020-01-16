@@ -61,7 +61,7 @@ namespace cp365
             MessageBox.Show(errorMessage);
             if (ao.IsSuccess)
             {
-                Config.SerialNum = seqNumber+ao.arjCount;
+                Config.SerialNum = seqNumber+ao.arjFilesCount;
                 Config.SerialDate = Util.DateToYMD(DateTime.Now);
             }
             ao.Dispose();
