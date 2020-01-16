@@ -17,7 +17,6 @@ namespace cp365
         {
             InitializeComponent();
             ptk = new PTKPSD(Config.PTKiniFile);
-            // ниже в датах заменяем время на 00:00:00 или 23:59:00
             this.dateFrom.Value = CreateDate(DateTime.Now, true); 
             this.dateTo.Value = CreateDate(DateTime.Now, false);
             this.dateFrom_ValueChanged(null, null);
@@ -35,11 +34,13 @@ namespace cp365
         {
             this.Close();
         }
-
+        /// <summary>
+        /// По выделенным строкам: взять посылку из PTK\Post\Store, снять ЭЦП, распаковать в AFN_IN
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnProcess_Click(object sender, EventArgs e)
         {
-            // обработка помеченных файлов
-
             if (this.dataGrid.SelectedRows.Count > 0)
             {
                 string afnDirectory = Config.AFNDir;
@@ -59,7 +60,7 @@ namespace cp365
                         else
                         {
                             afnNames.Add(mz.ArjName);
-                            result += mz.ArjName + "\n";
+                            result += mz.ArjName + Environment.NewLine;
                         }
                     }
                 }
@@ -86,10 +87,13 @@ namespace cp365
             FillDataGrid();
         }
 
+        /// <summary>
+        /// Заполнение таблицы перечнем посылок имени посылки mz и имени ARJ-архива в нем
+        /// </summary>
         private void FillDataGrid()
         {
 
-            string errorMessage = null;
+            string errorMessage;
             List<MZFile> data = ptk.GetMzFiles(dateFrom.Value, dateTo.Value, out errorMessage);
             if (data == null || !String.IsNullOrEmpty(errorMessage))
             {
@@ -102,7 +106,6 @@ namespace cp365
             this.dataGrid.Columns["mzErr"].HeaderText = "Ошибка";
             this.dataGrid.Columns["ArjName"].HeaderText = "Имя файла ФНС";
             this.dataGrid.AutoResizeColumns();
-            
         }
 
         private void dataGrid_SelectionChanged(object sender, EventArgs e)
@@ -122,7 +125,13 @@ namespace cp365
             // изменить время в дате на 23:590:00
             this.dateFrom.Value.Add(new TimeSpan(23, 59, 0));
         }
-
+        /// <summary>
+        /// Создает новую дату на основе существующей (dt)
+        /// если startDate = true, то время заменяется на 00:00:00, иначе - на 23:59:00
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="startDate"></param>
+        /// <returns></returns>
         private DateTime CreateDate(DateTime dt, bool startDate)
         {
             if(startDate)
@@ -148,6 +157,11 @@ namespace cp365
             }
         }
 
+        /// <summary>
+        /// копирует значение поля dateTo в dateFrom и заменяет время на 23:59:00
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dateTo_KeyPress(object sender, KeyPressEventArgs e)
         {
             if(e.KeyChar == 'c' || e.KeyChar=='C')
